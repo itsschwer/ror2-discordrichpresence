@@ -15,10 +15,15 @@ namespace DiscordRPC.Unity
 		const string PIPE_NAME = @"discord-ipc-{0}";
 
 		private NamedPipeClientStream _stream;
-		private byte[] _buffer = new byte[PipeFrame.MAX_SIZE];
+		private readonly byte[] _buffer = new byte[PipeFrame.MAX_SIZE];
 
 		public ILogger Logger { get; set; }
-		public bool IsConnected {  get { return _stream != null && _stream.IsConnected; } }
+
+		public bool IsConnected
+		{ 
+			get => _stream != null && _stream.IsConnected;
+		}
+
 		public int ConnectedPipe { get; private set; }
 
 		private volatile bool _isDisposed = false;
@@ -26,10 +31,14 @@ namespace DiscordRPC.Unity
 		public bool Connect(int pipe)
 		{
 			if (_isDisposed)
+            {
 				throw new ObjectDisposedException("NamedPipe");
+			}
 			
 			if (pipe > 9)
+            {
 				throw new ArgumentOutOfRangeException("pipe", "Argument cannot be greater than 9");
+			}
 			
 			if (pipe < 0)
 			{
@@ -38,7 +47,10 @@ namespace DiscordRPC.Unity
 				for (int i = 0; i < 10; i++)
 				{
 					if (AttemptConnection(i) || AttemptConnection(i, true))
+                    {
 						return true;
+					}
+						
 				}
 
 				//We failed everythign else
@@ -89,7 +101,7 @@ namespace DiscordRPC.Unity
 				Logger.Info("Connected");
 				return true;
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Logger.Error("Failed: " + e.GetType().FullName + ", " + e.Message);
 				ConnectedPipe = -1;
@@ -110,7 +122,11 @@ namespace DiscordRPC.Unity
 
 		public void Dispose()
 		{
-			if (_isDisposed) return;
+			if (_isDisposed)
+            {
+				return;
+			}
+
 			Logger.Trace("Disposing Stream");
 			_isDisposed = true;
 			Close();
@@ -119,12 +135,14 @@ namespace DiscordRPC.Unity
 		public bool ReadFrame(out PipeFrame frame)
 		{
 			if (_isDisposed)
+            {
 				throw new ObjectDisposedException("_stream");
+			}
 
 			//We are not connected so we cannot read!
 			if (!IsConnected)
 			{
-				frame = default(PipeFrame);
+				frame = default;
 				return false;
 			}
 
@@ -134,7 +152,7 @@ namespace DiscordRPC.Unity
 
 			if (length == 0)
 			{
-				frame = default(PipeFrame);
+				frame = default;
 				return false;
 			}
 
@@ -158,7 +176,9 @@ namespace DiscordRPC.Unity
 		public bool WriteFrame(PipeFrame frame)
 		{
 			if (_isDisposed)
+            {
 				throw new ObjectDisposedException("_stream");
+			}
 
 			//Write the frame. We are assuming proper duplex connection here
 			if (!IsConnected)

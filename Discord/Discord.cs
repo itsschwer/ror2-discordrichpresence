@@ -26,7 +26,9 @@ namespace DiscordRichPresence
 			Join = 2
 		}
 
-		DiscordRpcClient client;
+		public DiscordRpcClient Client { get; set; }
+
+		public RichPresence RichPresence { get; set; }
 
 		static PrivacyLevel currentPrivacyLevel;
 		
@@ -35,23 +37,29 @@ namespace DiscordRichPresence
 			Logger.LogInfo("Starting Discord Rich Presence....");
 			UnityNamedPipe pipe = new UnityNamedPipe();
 			// Get your own clientid!
-			client = new DiscordRpcClient("", -1, null, true, pipe);
-			client.RegisterUriScheme("632360");
+			Client = new DiscordRpcClient("992086428240580720", -1, null, true, pipe);
+			Client.RegisterUriScheme("632360");
 
+			RichPresence = new RichPresence()
+			{
+				State = "Starting game..."
+			};
+
+			Client.SetPresence(RichPresence);
 
 			currentPrivacyLevel = PrivacyLevel.Join;
 
 			// Subscribe to join events
-			client.Subscribe(DiscordRPC.EventType.Join);
-			client.Subscribe(DiscordRPC.EventType.JoinRequest);
+			Client.Subscribe(DiscordRPC.EventType.Join);
+			Client.Subscribe(DiscordRPC.EventType.JoinRequest);
 
 			// Setup Discord client hooks
-			client.OnReady += Client_OnReady;
-			client.OnError += Client_OnError;
-			client.OnJoinRequested += Client_OnJoinRequested;
+			Client.OnReady += Client_OnReady;
+			Client.OnError += Client_OnError;
+			Client.OnJoinRequested += Client_OnJoinRequested;
 			// client.OnJoin += Client_OnJoin;
 
-			client.Initialize();
+			Client.Initialize();
 
 			// When a new stage is entered, update stats
 			On.RoR2.Run.BeginStage += Run_BeginStage;
@@ -70,12 +78,11 @@ namespace DiscordRichPresence
 
 			On.RoR2.CharacterBody.Awake += CharacterBody_Awake;
 
-
 			// Messy work around for hiding timer in Discord when user pauses the game during a run
-			RoR2.PauseManager.onPauseStartGlobal += OnGamePaused;
+			PauseManager.onPauseStartGlobal += OnGamePaused;
 
 			// When the user un-pauses, re-broadcast run time to Discord
-			RoR2.PauseManager.onPauseEndGlobal += OnGameUnPaused;
+			PauseManager.onPauseEndGlobal += OnGameUnPaused;
 
 			// Register console commands
 			On.RoR2.Console.Awake += (orig, self) =>
@@ -87,43 +94,98 @@ namespace DiscordRichPresence
 
 		public void OnGamePaused()
 		{
-			if (RoR2.Run.instance != null)
+			if (Run.instance != null)
 			{
-				if (client.CurrentPresence != null)
+				if (Client.CurrentPresence != null)
 				{
 					SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
 					if (scene != null)
-						client.SetPresence(BuildRichPresenceForStage(scene, RoR2.Run.instance, false));
+                    {
+						SetStagePresence(scene, Run.instance, false);
+					}
 				}
 			}
 		}
 
 		public void OnGameUnPaused()
 		{
-			if (RoR2.Run.instance != null)
+			if (Run.instance != null)
 			{
-				if (client.CurrentPresence != null)
+				if (Client.CurrentPresence != null)
 				{
 					SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
 					if (scene != null)
-						client.SetPresence(BuildRichPresenceForStage(scene, RoR2.Run.instance, true));
+                    {
+						SetStagePresence(scene, Run.instance, true);
+					}
 				}
 			}
 		}
 
+		private bool CharacterInternalName(string name, out string formatted)
+        {
+			formatted = "Unknown";
+			switch (name) // sigh...
+            {
+				case "Acrid":
+					formatted = "croco";
+					return true;
+				case "Artificer":
+					formatted = "mage";
+					return true;
+				case "Bandit":
+					formatted = "bandit";
+					return true;
+				case "Captain":
+					formatted = "captain";
+					return true;
+				case "Commando":
+					formatted = "commando";
+					return true;
+				case "Engineer":
+					formatted = "engi";
+					return true;
+				case "Heretic":
+					formatted = "heretic";
+					return true;
+				case "Huntress":
+					formatted = "huntress";
+					return true;
+				case "Loader":
+					formatted = "loader";
+					return true;
+				case "MUL-T":
+					formatted = "toolbot";
+					return true;
+				case "Mercenary":
+					formatted = "merc";
+					return true;
+				case "REX":
+					formatted = "treebot";
+					return true;
+				case "Railgunner":
+					formatted = "railgunner";
+					return true;
+				case "Void Fiend":
+					formatted = "voidsurvivor";
+					return true;
+			}
+			return false;
+        }
+
 		private void CharacterBody_Awake(On.RoR2.CharacterBody.orig_Awake orig, CharacterBody self)
 		{
-			if(self.isClient)
+			if (CharacterInternalName(self.GetDisplayName(), out string formatted)) // Can't figure out a way to detect player from CharacterBody, so going the nuclear option :(
 			{
-				Logger.LogInfo("Client!" + self.GetDisplayName());
-				RichPresence presence = client.CurrentPresence;
-				presence.Assets.SmallImageKey = self.baseNameToken;
-				presence.Assets.SmallImageText = self.GetDisplayName();
+				RichPresence.Assets.SmallImageKey = formatted;
+				RichPresence.Assets.SmallImageText = self.GetDisplayName();
+				Client.SetPresence(RichPresence);
 			}
+
 			orig(self);
 		}
 
-		//Remove any lingering hooks and dispose of discord client connection
+		// Remove any lingering hooks and dispose of discord client connection
 		public void Dispose()
 		{
 			On.RoR2.Run.BeginStage -= Run_BeginStage;
@@ -133,47 +195,16 @@ namespace DiscordRichPresence
 			On.RoR2.SteamworksLobbyManager.OnLobbyChanged -= SteamworksLobbyManager_OnLobbyChanged;
 			On.RoR2.SteamworksLobbyManager.LeaveLobby -= SteamworksLobbyManager_LeaveLobby;
 
-			RoR2.PauseManager.onPauseStartGlobal -= OnGamePaused;
-			RoR2.PauseManager.onPauseEndGlobal -= OnGameUnPaused;
+			PauseManager.onPauseStartGlobal -= OnGamePaused;
+			PauseManager.onPauseEndGlobal -= OnGameUnPaused;
 
-			client.Unsubscribe(DiscordRPC.EventType.Join);
-			client.Unsubscribe(DiscordRPC.EventType.JoinRequest);
+			Client.Unsubscribe(DiscordRPC.EventType.Join);
+			Client.Unsubscribe(DiscordRPC.EventType.JoinRequest);
 
-			client.Dispose();
+			Client.Dispose();
 		}
 
-		public RichPresence BuildLobbyPresence(ulong lobbyID, Facepunch.Steamworks.Client client)
-		{
-			RichPresence presence = new RichPresence()
-			{
-				State = "In Lobby",
-				Details = "Preparing",
-				Assets = new DiscordRPC.Assets()
-				{
-					LargeImageKey = "lobby",
-					LargeImageText = "Join!",
-
-				},
-				Party = new Party()
-				{
-					ID = client.Username,
-					Max = client.Lobby.MaxMembers,
-					Size = client.Lobby.NumMembers
-				}
-			};
-
-			if (currentPrivacyLevel == PrivacyLevel.Join)
-			{
-				presence.Secrets = new Secrets()
-				{
-					JoinSecret = lobbyID.ToString()
-				};
-			}
-
-			return presence;
-		}
-
-		//Be kind, rewind!
+		// Be kind, rewind!
 		public void OnDisable()
 		{
 			Dispose();
@@ -182,10 +213,12 @@ namespace DiscordRichPresence
 		private void Client_OnJoin(object sender, JoinMessage args)
 		{
 			Logger.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
-            ConCommandArgs conArgs = new ConCommandArgs();
-            conArgs.userArgs = new List<string>(){args.Secret};
+            ConCommandArgs conArgs = new ConCommandArgs
+            {
+                userArgs = new List<string>() { args.Secret }
+            };
             // We use this so we don't have to use the Epic Games SDK
-			RoR2.SteamworksLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);
+            SteamworksLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);
 		}
 
 		//This is mostly handled through the Discord overlay now, so we can always accept for now
@@ -194,7 +227,7 @@ namespace DiscordRichPresence
 			Logger.LogInfo(string.Format("User {0} asked to join lobby", args.User.Username));
 			Chat.AddMessage(string.Format("Discord user {0} has asked to join your game!", args.User.Username));
 			//Always let people into your game for now
-			client.Respond(args, true);
+			Client.Respond(args, true);
 		}
 
 		private void Client_OnError(object sender, ErrorMessage args)
@@ -203,39 +236,34 @@ namespace DiscordRichPresence
 			Dispose();
 		}
 
-		//Doesn't seem to ever be invoked, other callbacks need to be subscribed to
 		private void Client_OnReady(object sender, ReadyMessage args)
 		{
 			Logger.LogInfo("Discord Rich Presence Ready - User: " + args.User.Username);
-			if (client != null && client.IsInitialized)
-				client.SetPresence(new RichPresence() //calling client.ClearPresence throws a null ref anywhere it is called - need to investigate more
-				{
-					Assets = new DiscordRPC.Assets()
-					{
-						LargeImageKey = "lobby",
-						LargeImageText = "In Menu",
 
+			if (Client != null && Client.IsInitialized)
+            {
+				RichPresence = new RichPresence()
+				{
+					Assets = new Assets()
+					{
+						LargeImageKey = "riskofrain2",
+						LargeImageText = "Risk of Rain 2"
 					},
-					Details = "No Presence",
-					State = "In Menu"
-				});
+					State = "Starting game..."
+				};
+
+				Client.SetPresence(RichPresence);
+			}
 		}
 
 		//Currently, presence isn't cleared on run/lobby exit - TODO
 		private void SteamworksLobbyManager_LeaveLobby(On.RoR2.SteamworksLobbyManager.orig_LeaveLobby orig, SteamworksLobbyManager self)
 		{
-			if (client != null && client.IsInitialized)
-				client.SetPresence(new RichPresence() //calling client.ClearPresence throws a null ref anywhere it is called - need to investigate more
-				{
-					Assets = new DiscordRPC.Assets()
-					{
-						LargeImageKey = "lobby",
-						LargeImageText = "In Menu",
+			if (Client != null && Client.IsInitialized)
+            {
+				SetMainMenuPresence();
+			}
 
-					},
-					Details = "No Presence",
-					State = "In Menu"
-				});
 			orig(self);
 		}
 
@@ -244,15 +272,14 @@ namespace DiscordRichPresence
 		{
 			orig(self);
 
-			if (Facepunch.Steamworks.Client.Instance == null)
+			if (Facepunch.Steamworks.Client.Instance == null || !self.isInLobby)
+            {
 				return;
-
-			if (self.isInLobby)
-			{
-				Logger.LogInfo("Discord re-broadcasting Steam Lobby");
-				ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
-				client.SetPresence(BuildLobbyPresence(lobbyID, Facepunch.Steamworks.Client.Instance));
 			}
+
+			Logger.LogInfo("Discord re-broadcasting Steam Lobby");
+			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
+			SetLobbyPresence(lobbyID, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private void SteamworksLobbyManager_OnLobbyJoined(On.RoR2.SteamworksLobbyManager.orig_OnLobbyJoined orig,SteamworksLobbyManager self,  bool success)
@@ -260,13 +287,15 @@ namespace DiscordRichPresence
 			orig(self, success);
 
 			if (!success || Facepunch.Steamworks.Client.Instance == null)
+            {
 				return;
+			}
 
 			Logger.LogInfo("Discord join complete");
 
 			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
 
-			client.SetPresence(BuildLobbyPresence(lobbyID, Facepunch.Steamworks.Client.Instance));
+			SetLobbyPresence(lobbyID, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private void SteamworksLobbyManager_OnLobbyCreated(On.RoR2.SteamworksLobbyManager.orig_OnLobbyCreated orig, SteamworksLobbyManager self, bool success)
@@ -274,29 +303,24 @@ namespace DiscordRichPresence
 			orig(self, success);
 
 			if (!success || Facepunch.Steamworks.Client.Instance == null)
+            {
 				return;
+			}
+				
 
 			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
 
 			Logger.LogInfo("Discord broadcasting new Steam lobby" + lobbyID);
-			client.SetPresence(BuildLobbyPresence(lobbyID, Facepunch.Steamworks.Client.Instance));
+			SetLobbyPresence(lobbyID, Facepunch.Steamworks.Client.Instance);
 		}
 
 		//If the scene being loaded is a menu scene, remove the presence
 		private void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
 		{
-			if (client != null && client.IsInitialized && arg1.name == "title")
-				client.SetPresence(new RichPresence() //calling client.ClearPresence throws a null ref anywhere it is called - need to investigate more
-				{
-					Assets = new DiscordRPC.Assets()
-					{
-						LargeImageKey = "lobby",
-						LargeImageText = "In Menu",
-
-					},
-					Details = "No Presence",
-					State = "In Menu"
-				});
+			if (Client != null && Client.IsInitialized && arg1.name == "title")
+            {
+				SetMainMenuPresence();
+			}
 		}
 
 		//When the game begins a new stage, update presence
@@ -310,40 +334,97 @@ namespace DiscordRichPresence
 
 				if (scene != null)
 				{
-					client.SetPresence(BuildRichPresenceForStage(scene, self, true));
+					SetStagePresence(scene, self, true);
 				}
 			}
 			orig(self);
 		}
 
-		public RichPresence BuildRichPresenceForStage(SceneDef scene, Run run, bool includeRunTime)
+		private string GetDifficultyString(DifficultyIndex difficultyIndex)
+        {
+			if ((int)difficultyIndex >= 3 && (int)difficultyIndex <= 10)
+            {
+				return "Eclipse " + ((int)difficultyIndex - 2);
+            }
+			switch (difficultyIndex)
+            {
+				case DifficultyIndex.Easy:
+					return "Drizzle";
+				case DifficultyIndex.Normal:
+					return "Rainstorm";
+				case DifficultyIndex.Hard:
+					return "Monsoon";
+				default:
+					return "Unknown";
+            }
+        }
+
+		public void SetStagePresence(SceneDef scene, Run run, bool includeRunTime)
 		{
-			RichPresence presence = new RichPresence()
+			RichPresence.Assets = new Assets()
 			{
-				Assets = new DiscordRPC.Assets()
-				{
-					LargeImageKey = scene.baseSceneName,
-					LargeImageText = RoR2.Language.GetString(scene.subtitleToken)
-					//add player character here!
-				},
-				State = "Classic Run",
-				Details = string.Format("Stage {0} - {1}", (run.stageClearCount + 1), RoR2.Language.GetString(scene.nameToken))
+				LargeImageKey = scene.baseSceneName,
+				LargeImageText = Language.GetString(scene.subtitleToken)
 			};
-			if (scene.sceneType == SceneType.Stage && includeRunTime)
+			RichPresence.State = GetDifficultyString(run.selectedDifficulty);
+			RichPresence.Details = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
+
+			if (scene.sceneType == SceneType.Stage && includeRunTime) //When in-game and paused, includeRunTime becomes false but sceneType is still SceneType.Stage
 			{
-				presence.Timestamps = new Timestamps()
+				RichPresence.Timestamps = new Timestamps()
 				{
 					StartUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() - ((ulong)run.GetRunStopwatch())
 				};
 			}
-			return presence;
+
+			Client.SetPresence(RichPresence);
+		}
+
+        public void SetMainMenuPresence()
+        {
+			RichPresence.Assets = new Assets()
+			{
+				LargeImageKey = "lobby",
+				LargeImageText = "In Menu"
+			};
+			RichPresence.State = "In Menu";
+			RichPresence.Timestamps = new Timestamps();
+
+			Client.SetPresence(RichPresence);
+		}
+
+		public void SetLobbyPresence(ulong lobbyID, Facepunch.Steamworks.Client client)
+		{
+			RichPresence.State = "In Lobby";
+			RichPresence.Details = "Preparing";
+			RichPresence.Assets = new Assets()
+			{
+				//LargeImageKey = "lobby",
+				LargeImageText = "Join!",
+			};
+			RichPresence.Party = new Party()
+			{
+				ID = client.Username,
+				Max = client.Lobby.MaxMembers,
+				Size = client.Lobby.NumMembers
+			};
+
+			if (currentPrivacyLevel == PrivacyLevel.Join)
+			{
+				RichPresence.Secrets = new Secrets()
+				{
+					JoinSecret = lobbyID.ToString()
+				};
+			}
+
+			Client.SetPresence(RichPresence);
 		}
 
 		// Temporarily disable concommand until we can port to latest R2API
 		// [ConCommand(commandName = "discord_privacy_level", flags  = ConVarFlags.None, helpText = "Set the privacy level for Discord (0 is disabled, 1 is presence, 2 is presence + join)")]
 		private static void SetPrivacyLevel(ConCommandArgs args)
 		{
-			if(args.Count != 1)
+			if (args.Count != 1)
 			{
 				Debug.LogError("discord_privacy_level accepts 1 parameter only");
 				return;
@@ -352,10 +433,13 @@ namespace DiscordRichPresence
 			int level;
 			bool parse = int.TryParse(args[0], out level);
 
-			if(parse)
+			if (parse)
+            {
 				currentPrivacyLevel = (PrivacyLevel)level; //unchecked
-			else
-				Debug.LogError("Failed to parse arg - must be integer value");
+				return;
+			}
+			
+			Debug.LogError("Failed to parse arg - must be integer value");
 			
 			// TODO - if disabled, clear presence
 		}
