@@ -15,15 +15,19 @@ namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool includeRunTime, bool showBoss = false)
+		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool includeRunTime, string whatToShow = "none")
 		{
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = Language.GetString(scene.subtitleToken);
 
 			richPresence.State = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-			if (showBoss && DiscordRichPresencePlugin.CurrentBoss != "None")
+			if (whatToShow == "boss" && DiscordRichPresencePlugin.CurrentBoss != "None")
 			{
 				richPresence.State = "Fighting " + DiscordRichPresencePlugin.CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+			}
+			else if (whatToShow == "charge" && DiscordRichPresencePlugin.CurrentChargeLevel > 0)
+            {
+				richPresence.State = "Charging teleporter (" + DiscordRichPresencePlugin.CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
 
 			richPresence.Details = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
@@ -37,22 +41,28 @@ namespace DiscordRichPresence.Utils
 				};
 			}
 
+			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
 		}
 
-		public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence)
+		public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence, string state = "")
 		{
 			richPresence.Assets = new Assets()
 			{
 				LargeImageKey = "riskofrain2", //lobby
 				LargeImageText = "In Menu"
 			};
-			richPresence.State = "In Menu";
-			richPresence.Details = DiscordRichPresencePlugin.MainMenuIdleMessageEntry.Value;
+			richPresence.Details = "In Menu";
+			richPresence.State = DiscordRichPresencePlugin.PluginConfig.MainMenuIdleMessageEntry.Value;
+			if (state != "")
+            {
+				richPresence.State = state;
+            }
 			richPresence.Timestamps = new Timestamps();
 			richPresence.Secrets = new Secrets();
 			richPresence.Party = new Party();
 
+			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
 		}
 
@@ -72,7 +82,7 @@ namespace DiscordRichPresence.Utils
 				Size = faceClient.Lobby.NumMembers
 			};
 
-			if (DiscordRichPresencePlugin.AllowJoiningEntry.Value)
+			if (DiscordRichPresencePlugin.PluginConfig.AllowJoiningEntry.Value)
 			{
 				richPresence.Secrets = new Secrets()
 				{
@@ -80,6 +90,7 @@ namespace DiscordRichPresence.Utils
 				};
 			}
 
+			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
 		}
 	}

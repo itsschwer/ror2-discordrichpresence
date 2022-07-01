@@ -13,6 +13,9 @@ using BepInEx.Logging;
 using DiscordRichPresence.Hooks;
 using DiscordRichPresence.Utils;
 
+// Thanks to WhelanB (to which this repository originates from)
+// and DarkKronicle (whose repository this is forked from)
+
 namespace DiscordRichPresence
 {
 	[BepInDependency("com.bepis.r2api")]
@@ -31,13 +34,23 @@ namespace DiscordRichPresence
 
 		public static RichPresence RichPresence { get; set; }
 
-		public static ConfigEntry<bool> AllowJoiningEntry { get; set; }
+		public struct PluginConfig
+        {
+			public static ConfigEntry<bool> AllowJoiningEntry { get; set; }
 
-		public static ConfigEntry<bool> ShowCurrentBossEntry { get; set; }
+			public static ConfigEntry<string> TeleporterStatusEntry { get; set; }
 
-		public static ConfigEntry<string> MainMenuIdleMessageEntry { get; set; }
+			public static ConfigEntry<string> MainMenuIdleMessageEntry { get; set; }
+		}
+
+		public static float CurrentChargeLevel { get; set; }
 
 		public static string CurrentBoss { get; set; } = "None";
+
+		public static SceneDef CurrentScene
+        {
+			get => SceneCatalog.GetSceneDefForCurrentScene();
+        }
 
 		public void Awake()
 		{
@@ -58,9 +71,14 @@ namespace DiscordRichPresence
 
 			Client.Initialize();
 
-			AllowJoiningEntry = Config.Bind("Options", "AllowJoining", true, "Controls whether or not other users should be allowed to ask to join your game.");
-			ShowCurrentBossEntry = Config.Bind("Options", "ShowCurrentBoss", true, "Controls whether or not the currently fought boss should be displayed.");
-			MainMenuIdleMessageEntry = Config.Bind("Options", "MainMenuIdleMessage", "", "Allows you to choose a message to be displayed when idling in the main menu.");
+			PluginConfig.AllowJoiningEntry = Config.Bind("Options", "AllowJoining", true, "Controls whether or not other users should be allowed to ask to join your game.");
+			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "TeleporterStatus", "none", "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty. Accepts 'boss', 'charge', and 'none'.");
+			PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "MainMenuIdleMessage", "", "Allows you to choose a message to be displayed when idling in the main menu.");
+
+			if (PluginConfig.TeleporterStatusEntry.Value != "none" && PluginConfig.TeleporterStatusEntry.Value != "charge" && PluginConfig.TeleporterStatusEntry.Value != "boss")
+            {
+				PluginConfig.TeleporterStatusEntry.Value = "none";
+            }
 		}
 
 		private static void InitializeHooks()
@@ -71,10 +89,33 @@ namespace DiscordRichPresence
 
 			On.RoR2.Run.BeginStage += Run_BeginStage;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
-            On.RoR2.CharacterMaster.OnBodyDestroyed += CharacterMaster_OnBodyDestroyed;
+            On.RoR2.GlobalEventManager.OnCharacterDeath += GlobalEventManager_OnCharacterDeath;
+            On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
 
 			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 		}
+
+        private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
+        {
+            if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == "charge")
+            {
+				CurrentChargeLevel = (float)Math.Round(self.chargeFraction, 2);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);
+			}
+
+			orig(self);
+        }
+
+        private static void GlobalEventManager_OnCharacterDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            if (damageReport.victim && damageReport.victimIsBoss)
+            {
+				CurrentBoss = "None";
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);
+			}
+
+			orig(self, damageReport);
+        }
 
         private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
         {
@@ -87,38 +128,41 @@ namespace DiscordRichPresence
 			else if (body.isBoss)
             {
 				CurrentBoss = body.GetDisplayName();
-            }
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);
+			}
 
 			orig(self, body);
 		}
 
-		private static void CharacterMaster_OnBodyDestroyed(On.RoR2.CharacterMaster.orig_OnBodyDestroyed orig, CharacterMaster self, CharacterBody characterBody) // TO-DO: Fix boss death not triggering
-		{
-			LoggerEXT.LogInfo("DiedPreson:" + characterBody.GetDisplayName());
-			LoggerEXT.LogInfo("IsBossWhoDied?:" + characterBody.isBoss);
-			if (characterBody.isBoss && characterBody.GetDisplayName() == CurrentBoss)
-			{
-				CurrentBoss = "None";
-			}
-			orig(self, characterBody);
-		}
-
 		private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
 		{
-			SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
+			CurrentChargeLevel = 0;
 
-			if (scene != null)
+			if (CurrentScene != null)
 			{
-				PresenceUtils.SetStagePresence(Client, RichPresence, scene, self, true, ShowCurrentBossEntry.Value);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, true, PluginConfig.TeleporterStatusEntry.Value);
 			}
 			orig(self);
 		}
 
 		private static void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
 		{
-			if (Client != null && Client.IsInitialized && (arg1.name == "title" || arg1.name == "lobby")) // TO-DO: Create separate presence for in menu but choosing character
+			if (Client == null || !Client.IsInitialized)
 			{
+				return;
+			}
+
+			if (arg1.name == "title")
+            {
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence);
+			}
+			if (arg1.name == "lobby")
+            {
+				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Choosing character");
+			}
+			if (arg1.name == "logbook")
+            {
+				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading logbook");
 			}
 		}
 
@@ -140,7 +184,8 @@ namespace DiscordRichPresence
 
 			On.RoR2.Run.BeginStage -= Run_BeginStage;
 			On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
-			On.RoR2.CharacterMaster.OnBodyDestroyed -= CharacterMaster_OnBodyDestroyed;
+			On.RoR2.GlobalEventManager.OnCharacterDeath -= GlobalEventManager_OnCharacterDeath;
+			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
 
 			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
 

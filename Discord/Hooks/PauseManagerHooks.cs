@@ -33,10 +33,9 @@ namespace DiscordRichPresence.Hooks
 			{
 				if (DiscordRichPresencePlugin.Client.CurrentPresence != null)
 				{
-					SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
-					if (scene != null)
+					if (DiscordRichPresencePlugin.CurrentScene != null)
 					{
-						PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, scene, Run.instance, false, DiscordRichPresencePlugin.ShowCurrentBossEntry.Value);
+						PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, false, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
 					}
 				}
 			}
@@ -48,10 +47,9 @@ namespace DiscordRichPresence.Hooks
 			{
 				if (DiscordRichPresencePlugin.Client.CurrentPresence != null)
 				{
-					SceneDef scene = SceneCatalog.GetSceneDefForCurrentScene();
-					if (scene != null)
+					if (DiscordRichPresencePlugin.CurrentScene != null)
 					{
-						PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, scene, Run.instance, true, DiscordRichPresencePlugin.ShowCurrentBossEntry.Value);
+						PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, true, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
 					}
 				}
 			}
