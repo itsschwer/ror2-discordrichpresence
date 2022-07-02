@@ -17,10 +17,7 @@ namespace DiscordRichPresence.Utils
 {
     public static class RiskOfOptionsUtils
     {
-        public static bool IsEnabled
-        {
-            get => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
-        }
+        public static bool IsEnabled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
 
         public static void AddCheckBoxOption(ConfigEntry<bool> entry)
         {

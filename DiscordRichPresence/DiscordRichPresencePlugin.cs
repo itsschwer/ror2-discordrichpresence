@@ -47,12 +47,11 @@ namespace DiscordRichPresence
 
 		public static string CurrentBoss { get; set; } = "None";
 
-		public static SceneDef CurrentScene
-        {
-			get => SceneCatalog.GetSceneDefForCurrentScene();
-        }
+		public static Button TestButton;
 
-		public enum TeleporterStatus : byte
+        public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
+
+        public enum TeleporterStatus : byte
         {
             None = 0,
 			Boss = 1,
@@ -63,6 +62,7 @@ namespace DiscordRichPresence
 		{
 			LoggerEXT = Logger;
 			Logger.LogInfo("Starting Discord Rich Presence...");
+
 			UnityNamedPipe pipe = new UnityNamedPipe();
 			Client = new DiscordRpcClient("992086428240580720", -1, null, true, pipe);
 			Client.RegisterUriScheme("632360");
@@ -87,11 +87,6 @@ namespace DiscordRichPresence
 				RiskOfOptionsUtils.AddMultiOption(PluginConfig.TeleporterStatusEntry);
 				RiskOfOptionsUtils.AddTextInputOption(PluginConfig.MainMenuIdleMessageEntry);
 			}
-
-			/*if (PluginConfig.TeleporterStatusEntry.Value != "none" && PluginConfig.TeleporterStatusEntry.Value != "charge" && PluginConfig.TeleporterStatusEntry.Value != "boss")
-            {
-				PluginConfig.TeleporterStatusEntry.Value = "none";
-            }*/
 		}
 
 		private static void InitializeHooks()
@@ -100,13 +95,55 @@ namespace DiscordRichPresence
 			PauseManagerHooks.Initialize();
 			SteamworksLobbyHooks.Initialize();
 
+            On.RoR2.Run.OnServerBossAdded += Run_OnServerBossAdded;
+            On.RoR2.Run.OnServerBossDefeated += Run_OnServerBossDefeated;
 			On.RoR2.Run.BeginStage += Run_BeginStage;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += GlobalEventManager_OnCharacterDeath;
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
 
 			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 		}
+
+        public static void Dispose()
+		{
+			DiscordClientHooks.Dispose(Client);
+			PauseManagerHooks.Dispose();
+			SteamworksLobbyHooks.Dispose();
+
+			On.RoR2.Run.OnServerBossAdded -= Run_OnServerBossAdded;
+			On.RoR2.Run.OnServerBossDefeated -= Run_OnServerBossDefeated;
+			On.RoR2.Run.BeginStage -= Run_BeginStage;
+			On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
+			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
+
+			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+
+			Client.Dispose();
+		}
+
+		public void OnEnable()
+		{
+			InitializeHooks();
+		}
+
+		public void OnDisable()
+		{
+			Dispose();
+		}
+
+		private static void Run_OnServerBossDefeated(On.RoR2.Run.orig_OnServerBossDefeated orig, Run self, BossGroup bossGroup)
+        {
+			CurrentBoss = "None";
+
+			orig(self, bossGroup);
+        }
+
+        private static void Run_OnServerBossAdded(On.RoR2.Run.orig_OnServerBossAdded orig, Run self, BossGroup bossGroup, CharacterMaster characterMaster)
+        {
+			CurrentBoss = characterMaster.GetBody().GetDisplayName();
+
+			orig(self, bossGroup, characterMaster);
+        }
 
         private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
         {
@@ -119,17 +156,6 @@ namespace DiscordRichPresence
 			orig(self);
         }
 
-        private static void GlobalEventManager_OnCharacterDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            if (damageReport.victim && damageReport.victimIsBoss)
-            {
-				CurrentBoss = "None";
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);
-			}
-
-			orig(self, damageReport);
-        }
-
         private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
         {
 			if (InfoTextUtils.GetCharacterInternalName(body.GetDisplayName(), out string formatted) && body == CharacterMaster.readOnlyInstancesList[0].GetBody())
@@ -137,11 +163,6 @@ namespace DiscordRichPresence
 				RichPresence.Assets.SmallImageKey = formatted;
 				RichPresence.Assets.SmallImageText = body.GetDisplayName();
 				Client.SetPresence(RichPresence);
-			}
-			else if (body.isBoss)
-            {
-				CurrentBoss = body.GetDisplayName();
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);
 			}
 
 			orig(self, body);
@@ -182,32 +203,6 @@ namespace DiscordRichPresence
             {
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading logbook");
 			}
-		}
-
-		public void OnEnable()
-        {
-			InitializeHooks();
-        }
-
-		public void OnDisable()
-		{
-			Dispose();
-		}
-
-		public static void Dispose()
-        {
-			DiscordClientHooks.Dispose(Client);
-			PauseManagerHooks.Dispose();
-			SteamworksLobbyHooks.Dispose();
-
-			On.RoR2.Run.BeginStage -= Run_BeginStage;
-			On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
-			On.RoR2.GlobalEventManager.OnCharacterDeath -= GlobalEventManager_OnCharacterDeath;
-			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
-
-			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
-
-			Client.Dispose();
 		}
     }
 }

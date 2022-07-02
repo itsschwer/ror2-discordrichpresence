@@ -40,7 +40,6 @@ namespace DiscordRichPresence.Hooks
 				return;
 			}
 
-
 			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
 
 			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord broadcasting new Steam lobby with ID " + lobbyID);
@@ -66,7 +65,7 @@ namespace DiscordRichPresence.Hooks
 		{
 			orig(self);
 
-			if (Facepunch.Steamworks.Client.Instance == null || !self.isInLobby)
+			if (!self.isInLobby || Facepunch.Steamworks.Client.Instance == null)
 			{
 				return;
 			}
@@ -80,10 +79,12 @@ namespace DiscordRichPresence.Hooks
 		{
 			orig(self);
 
-			if (DiscordRichPresencePlugin.Client != null && DiscordRichPresencePlugin.Client.IsInitialized)
+			if (DiscordRichPresencePlugin.Client == null || !DiscordRichPresencePlugin.Client.IsInitialized)
 			{
-				PresenceUtils.SetMainMenuPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence);
+				return;
 			}
+
+			PresenceUtils.SetMainMenuPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence);
 		}
 	}
 }

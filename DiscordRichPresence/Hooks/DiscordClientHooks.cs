@@ -25,10 +25,10 @@ namespace DiscordRichPresence.Hooks
 			client.OnReady += Client_OnReady;
 			client.OnError += Client_OnError;
 			client.OnJoinRequested += Client_OnJoinRequested;
-			// Client.OnJoin += Client_OnJoin;
-		}
+            client.OnJoin += Client_OnJoin;
+        }
 
-		public static void Dispose(DiscordRpcClient client)
+        public static void Dispose(DiscordRpcClient client)
         {
 			client.Unsubscribe(DiscordRPC.EventType.Join);
 			client.Unsubscribe(DiscordRPC.EventType.JoinRequest);
@@ -36,7 +36,7 @@ namespace DiscordRichPresence.Hooks
 			client.OnReady -= Client_OnReady;
 			client.OnError -= Client_OnError;
 			client.OnJoinRequested -= Client_OnJoinRequested;
-			// Client.OnJoin -= Client_OnJoin;
+			client.OnJoin -= Client_OnJoin;
 		}
 
 		private static void Client_OnReady(object sender, ReadyMessage args)
@@ -74,12 +74,12 @@ namespace DiscordRichPresence.Hooks
 			senderClient.Respond(args, true);
 		}
 
-		private static void Client_OnJoin(object sender, JoinMessage args)
+		private static void Client_OnJoin(object sender, JoinMessage args) // Works, but is finnicky...not sure what the trigger is. Needs testing
 		{
 			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
 			ConCommandArgs conArgs = new ConCommandArgs
 			{
-				userArgs = new List<string>() { args.Secret }
+				userArgs = new List<string>() { args.Secret },
 			};
 
 			SteamworksLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);

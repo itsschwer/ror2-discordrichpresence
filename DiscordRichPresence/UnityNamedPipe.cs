@@ -19,10 +19,7 @@ namespace DiscordRPC.Unity
 
 		public ILogger Logger { get; set; }
 
-		public bool IsConnected
-		{ 
-			get => _stream != null && _stream.IsConnected;
-		}
+		public bool IsConnected => _stream != null && _stream.IsConnected;
 
 		public int ConnectedPipe { get; private set; }
 

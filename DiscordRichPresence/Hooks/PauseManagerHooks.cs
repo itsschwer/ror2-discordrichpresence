@@ -29,29 +29,17 @@ namespace DiscordRichPresence.Hooks
 
 		private static void OnGamePaused()
 		{
-			if (Run.instance != null)
+			if (Run.instance != null && DiscordRichPresencePlugin.Client.CurrentPresence != null && DiscordRichPresencePlugin.CurrentScene != null)
 			{
-				if (DiscordRichPresencePlugin.Client.CurrentPresence != null)
-				{
-					if (DiscordRichPresencePlugin.CurrentScene != null)
-					{
-						PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, false, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
-					}
-				}
+				PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, true, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
 			}
 		}
 
 		private static void OnGameUnPaused()
 		{
-			if (Run.instance != null)
+			if (Run.instance != null && DiscordRichPresencePlugin.Client.CurrentPresence != null && DiscordRichPresencePlugin.CurrentScene != null)
 			{
-				if (DiscordRichPresencePlugin.Client.CurrentPresence != null)
-				{
-					if (DiscordRichPresencePlugin.CurrentScene != null)
-					{
-						PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, true, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
-					}
-				}
+				PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, false, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
 			}
 		}
 	}

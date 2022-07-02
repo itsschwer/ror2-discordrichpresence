@@ -29,9 +29,9 @@ namespace DiscordRichPresence.Utils
 			Artifact = 256,
 			Sub = 512,
 			Event = 1024,
-			WorldEvent = 2056,
-			KeywordName = 4112,
-			Shrine = 8224
+			WorldEvent = 2048,
+			KeywordName = 4096,
+			Shrine = 8192
         }
 
 		public static string GetDifficultyString(DifficultyIndex difficultyIndex)

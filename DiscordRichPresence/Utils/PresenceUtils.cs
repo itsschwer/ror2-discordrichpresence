@@ -15,7 +15,7 @@ namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool includeRunTime, DiscordRichPresencePlugin.TeleporterStatus whatToShow = DiscordRichPresencePlugin.TeleporterStatus.None)
+		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused, DiscordRichPresencePlugin.TeleporterStatus whatToShow = DiscordRichPresencePlugin.TeleporterStatus.None)
 		{
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = Language.GetString(scene.subtitleToken);
@@ -33,7 +33,7 @@ namespace DiscordRichPresence.Utils
 			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
 
 			richPresence.Timestamps = new Timestamps();
-			if (scene.sceneType == SceneType.Stage && includeRunTime)
+			if (scene.sceneType == SceneType.Stage && !isPaused)
 			{
 				richPresence.Timestamps = new Timestamps()
 				{
