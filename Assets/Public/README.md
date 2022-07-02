@@ -27,7 +27,7 @@ Invitation via Discord
 ## Changelog
 
 1.0.1
-- Release
+- (Re)Release
 
 ## Credits
 

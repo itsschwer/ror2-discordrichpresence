@@ -57,6 +57,9 @@
     <Reference Include="Rewired_Windows_Lib">
       <HintPath>..\libs\Rewired_Windows_Lib.dll</HintPath>
     </Reference>
+    <Reference Include="RiskOfOptions">
+      <HintPath>..\libs\RiskOfOptions.dll</HintPath>
+    </Reference>
     <Reference Include="TextMeshPro-1.0.55.2017.1.0b11">
       <HintPath>..\libs\TextMeshPro-1.0.55.2017.1.0b11.dll</HintPath>
     </Reference>

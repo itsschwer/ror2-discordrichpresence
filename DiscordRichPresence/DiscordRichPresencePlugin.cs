@@ -20,11 +20,11 @@ namespace DiscordRichPresence
 {
 	[BepInDependency("com.bepis.r2api")]
 
+    [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
+
 	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.0.1")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)] // Client-sided
-
-	[R2APISubmoduleDependency("CommandHelper")]
 
 	public class DiscordRichPresencePlugin : BaseUnityPlugin
 	{
@@ -38,7 +38,7 @@ namespace DiscordRichPresence
         {
 			public static ConfigEntry<bool> AllowJoiningEntry { get; set; }
 
-			public static ConfigEntry<string> TeleporterStatusEntry { get; set; }
+			public static ConfigEntry<TeleporterStatus> TeleporterStatusEntry { get; set; }
 
 			public static ConfigEntry<string> MainMenuIdleMessageEntry { get; set; }
 		}
@@ -50,6 +50,13 @@ namespace DiscordRichPresence
 		public static SceneDef CurrentScene
         {
 			get => SceneCatalog.GetSceneDefForCurrentScene();
+        }
+
+		public enum TeleporterStatus : byte
+        {
+            None = 0,
+			Boss = 1,
+			Charge = 2
         }
 
 		public void Awake()
@@ -67,18 +74,24 @@ namespace DiscordRichPresence
 
 			Client.SetPresence(RichPresence);
 
-			CommandHelper.AddToConsoleWhenReady(); // Init all commands
-
 			Client.Initialize();
 
-			PluginConfig.AllowJoiningEntry = Config.Bind("Options", "AllowJoining", true, "Controls whether or not other users should be allowed to ask to join your game.");
-			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "TeleporterStatus", "none", "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty. Accepts 'boss', 'charge', and 'none'.");
-			PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "MainMenuIdleMessage", "", "Allows you to choose a message to be displayed when idling in the main menu.");
+			PluginConfig.AllowJoiningEntry = Config.Bind("Options", "Allow Joining", true, "Controls whether or not other users should be allowed to ask to join your game.");
+			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
+			PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "Main Menu Idle Message", "", "Allows you to choose a message to be displayed when idling in the main menu.");
 
-			if (PluginConfig.TeleporterStatusEntry.Value != "none" && PluginConfig.TeleporterStatusEntry.Value != "charge" && PluginConfig.TeleporterStatusEntry.Value != "boss")
+			if (RiskOfOptionsUtils.IsEnabled)
+            {
+				RiskOfOptionsUtils.SetModDescription("Adds Discord Rich Presence functionality to Risk of Rain 2");
+				RiskOfOptionsUtils.AddCheckBoxOption(PluginConfig.AllowJoiningEntry);
+				RiskOfOptionsUtils.AddMultiOption(PluginConfig.TeleporterStatusEntry);
+				RiskOfOptionsUtils.AddTextInputOption(PluginConfig.MainMenuIdleMessageEntry);
+			}
+
+			/*if (PluginConfig.TeleporterStatusEntry.Value != "none" && PluginConfig.TeleporterStatusEntry.Value != "charge" && PluginConfig.TeleporterStatusEntry.Value != "boss")
             {
 				PluginConfig.TeleporterStatusEntry.Value = "none";
-            }
+            }*/
 		}
 
 		private static void InitializeHooks()
@@ -97,7 +110,7 @@ namespace DiscordRichPresence
 
         private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
         {
-            if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == "charge")
+            if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Charge)
             {
 				CurrentChargeLevel = (float)Math.Round(self.chargeFraction, 2);
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);

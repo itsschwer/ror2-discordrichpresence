@@ -15,17 +15,17 @@ namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool includeRunTime, string whatToShow = "none")
+		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool includeRunTime, DiscordRichPresencePlugin.TeleporterStatus whatToShow = DiscordRichPresencePlugin.TeleporterStatus.None)
 		{
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = Language.GetString(scene.subtitleToken);
 
 			richPresence.Details = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-			if (whatToShow == "boss" && DiscordRichPresencePlugin.CurrentBoss != "None")
+			if (whatToShow == DiscordRichPresencePlugin.TeleporterStatus.Boss && DiscordRichPresencePlugin.CurrentBoss != "None")
 			{
 				richPresence.Details = "Fighting " + DiscordRichPresencePlugin.CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
-			else if (whatToShow == "charge" && DiscordRichPresencePlugin.CurrentChargeLevel > 0)
+			else if (whatToShow == DiscordRichPresencePlugin.TeleporterStatus.Charge && DiscordRichPresencePlugin.CurrentChargeLevel > 0)
             {
 				richPresence.Details = "Charging teleporter (" + DiscordRichPresencePlugin.CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
