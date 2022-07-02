@@ -119,7 +119,7 @@ namespace DiscordRichPresence
 
         private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
         {
-			if (InfoTextUtils.GetCharacterInternalName(body.GetDisplayName(), out string formatted) && body.isClient && body.isPlayerControlled) // TO-DO: Test if CharacterBody.isClient and CharacterBody.isPlayerControlled distinguishes on MP
+			if (InfoTextUtils.GetCharacterInternalName(body.GetDisplayName(), out string formatted) && body == CharacterMaster.readOnlyInstancesList[0].GetBody())
 			{
 				RichPresence.Assets.SmallImageKey = formatted;
 				RichPresence.Assets.SmallImageText = body.GetDisplayName();
@@ -142,6 +142,7 @@ namespace DiscordRichPresence
 			{
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, true, PluginConfig.TeleporterStatusEntry.Value);
 			}
+
 			orig(self);
 		}
 
@@ -152,9 +153,13 @@ namespace DiscordRichPresence
 				return;
 			}
 
-			if (arg1.name == "title")
+			if (arg1.name == "title" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence);
+			}
+			else if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+            {
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
 			}
 			if (arg1.name == "lobby")
             {

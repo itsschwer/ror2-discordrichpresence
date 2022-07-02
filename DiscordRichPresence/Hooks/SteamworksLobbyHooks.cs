@@ -44,7 +44,8 @@ namespace DiscordRichPresence.Hooks
 			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
 
 			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord broadcasting new Steam lobby with ID " + lobbyID);
-			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, lobbyID, Facepunch.Steamworks.Client.Instance);
+
+			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private static void SteamworksLobbyManager_OnLobbyJoined(On.RoR2.SteamworksLobbyManager.orig_OnLobbyJoined orig, SteamworksLobbyManager self, bool success)
@@ -58,9 +59,7 @@ namespace DiscordRichPresence.Hooks
 
 			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord join complete");
 
-			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
-
-			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, lobbyID, Facepunch.Steamworks.Client.Instance);
+			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private static void SteamworksLobbyManager_OnLobbyChanged(On.RoR2.SteamworksLobbyManager.orig_OnLobbyChanged orig, SteamworksLobbyManager self)
@@ -73,18 +72,18 @@ namespace DiscordRichPresence.Hooks
 			}
 
 			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord re-broadcasting Steam Lobby");
-			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
-			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, lobbyID, Facepunch.Steamworks.Client.Instance);
+
+			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private static void SteamworksLobbyManager_LeaveLobby(On.RoR2.SteamworksLobbyManager.orig_LeaveLobby orig, SteamworksLobbyManager self)
 		{
+			orig(self);
+
 			if (DiscordRichPresencePlugin.Client != null && DiscordRichPresencePlugin.Client.IsInitialized)
 			{
 				PresenceUtils.SetMainMenuPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence);
 			}
-
-			orig(self);
 		}
 	}
 }

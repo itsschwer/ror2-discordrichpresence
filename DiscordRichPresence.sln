@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Discord", "Discord\Discord.csproj", "{809B3AB6-8BA1-4BB9-8736-DD5456C183A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRichPresence", "DiscordRichPresence\DiscordRichPresence.csproj", "{809B3AB6-8BA1-4BB9-8736-DD5456C183A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

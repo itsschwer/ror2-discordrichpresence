@@ -20,17 +20,17 @@ namespace DiscordRichPresence.Utils
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = Language.GetString(scene.subtitleToken);
 
-			richPresence.State = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+			richPresence.Details = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			if (whatToShow == "boss" && DiscordRichPresencePlugin.CurrentBoss != "None")
 			{
-				richPresence.State = "Fighting " + DiscordRichPresencePlugin.CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				richPresence.Details = "Fighting " + DiscordRichPresencePlugin.CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
 			else if (whatToShow == "charge" && DiscordRichPresencePlugin.CurrentChargeLevel > 0)
             {
-				richPresence.State = "Charging teleporter (" + DiscordRichPresencePlugin.CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				richPresence.Details = "Charging teleporter (" + DiscordRichPresencePlugin.CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
 
-			richPresence.Details = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
+			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
 
 			richPresence.Timestamps = new Timestamps();
 			if (scene.sceneType == SceneType.Stage && includeRunTime)
@@ -45,28 +45,33 @@ namespace DiscordRichPresence.Utils
 			client.SetPresence(richPresence);
 		}
 
-		public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence, string state = "")
+		public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence, string details = "")
 		{
 			richPresence.Assets = new Assets()
 			{
 				LargeImageKey = "riskofrain2", //lobby
 				LargeImageText = "In Menu"
 			};
-			richPresence.Details = "In Menu";
-			richPresence.State = DiscordRichPresencePlugin.PluginConfig.MainMenuIdleMessageEntry.Value;
-			if (state != "")
+			richPresence.Details = DiscordRichPresencePlugin.PluginConfig.MainMenuIdleMessageEntry.Value;
+			if (details != "")
             {
-				richPresence.State = state;
+				richPresence.Details = details;
             }
 			richPresence.Timestamps = new Timestamps();
-			richPresence.Secrets = new Secrets();
-			richPresence.Party = new Party();
+
+			richPresence.State = "In Lobby";
+			if (!Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+            {
+				richPresence.State = "In Menu";
+				richPresence.Secrets = new Secrets();
+				richPresence.Party = new Party();
+			}
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
 		}
 
-		public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, ulong lobbyID, Facepunch.Steamworks.Client faceClient)
+		public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, Facepunch.Steamworks.Client faceClient)
 		{
 			richPresence.State = "In Lobby";
 			richPresence.Details = "Preparing";
@@ -86,7 +91,7 @@ namespace DiscordRichPresence.Utils
 			{
 				richPresence.Secrets = new Secrets()
 				{
-					JoinSecret = lobbyID.ToString()
+					JoinSecret = faceClient.Lobby.CurrentLobby.ToString()
 				};
 			}
 
