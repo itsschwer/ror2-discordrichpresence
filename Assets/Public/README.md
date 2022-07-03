@@ -4,10 +4,11 @@ Adds Discord Rich Presence functionality to Risk of Rain 2.
 - Displays the current stage's icon, name, and subtitle, the currently selected difficulty, the currently selected character, and the current run time.
 - Has a unique presence for different menu states (currently idling in the menu, choosing a character, and reading the logbook).
 - Allows invitation of users via Discord (requires both the sender and receiver to have the mod for this to work).
+- Other unique presences depending on the game status.
 
 A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this! (Otherwise, it can be found at `BepInEx/config/com.cuno.discord.cfg`)
 
-If you experience any issues, please report them! I can be contacted on the RoR2 Modding Discord server, at Cuno#9958.
+If you experience any issues or have any suggestions, please contact me! I can be found on the RoR2 Modding Discord server, at Cuno#9958.
 
 ## Images
 Selecting a character
@@ -27,6 +28,12 @@ Invitation via Discord
 ![Invitation via Discord](https://cdn.discordapp.com/attachments/697901894999474308/992476608474644570/unknown.png)
 
 ## Changelog
+
+1.2.0
+- Fixed display images for Scorched Acres, Abyssal Depths, and Simulacrum
+  - Simulacrum runs will now display the image of the current environment being simulated
+- Added a unique presence for the lunar detonation sequence on Commencement
+- Unknown/custom characters will now display a question mark and the name of the character
 
 1.1.0
 - Added Risk of Options support, as a soft dependency

@@ -49,13 +49,13 @@ namespace DiscordRichPresence
 
 		public static EscapeSequenceController MoonDetonationController { get; set; }
 
-		public static Button TestButton;
+		public static int CurrentSimulacrumWave { get; set; }
 
 		public static DiscordRichPresencePlugin Instance { get; private set; }
 
         public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
 
-        public enum TeleporterStatus : byte
+		public enum TeleporterStatus : byte
         {
             None = 0,
 			Boss = 1,
@@ -74,7 +74,10 @@ namespace DiscordRichPresence
 
 			RichPresence = new RichPresence()
 			{
-				State = "Starting game..."
+				State = "Starting game...",
+				Assets = new Assets(),
+				Secrets = new Secrets(),
+				Timestamps = new Timestamps()
 			};
 
 			Client.SetPresence(RichPresence);
@@ -105,18 +108,11 @@ namespace DiscordRichPresence
 			On.RoR2.Run.BeginStage += Run_BeginStage;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
+			On.RoR2.EscapeSequenceController.BeginEscapeSequence += EscapeSequenceController_BeginEscapeSequence;
+            On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
 
 			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
-            On.RoR2.EscapeSequenceController.BeginEscapeSequence += EscapeSequenceController_BeginEscapeSequence;
 		}
-
-        private static void EscapeSequenceController_BeginEscapeSequence(On.RoR2.EscapeSequenceController.orig_BeginEscapeSequence orig, EscapeSequenceController self)
-        {
-			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
-			MoonDetonationController = self;
-
-			orig(self);
-        }
 
         public static void Dispose()
 		{
@@ -129,9 +125,10 @@ namespace DiscordRichPresence
 			On.RoR2.Run.BeginStage -= Run_BeginStage;
 			On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
 			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
+			On.RoR2.EscapeSequenceController.BeginEscapeSequence -= EscapeSequenceController_BeginEscapeSequence;
+			On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
 
 			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
-			On.RoR2.EscapeSequenceController.BeginEscapeSequence -= EscapeSequenceController_BeginEscapeSequence;
 
 			Client.Dispose();
 		}
@@ -185,12 +182,32 @@ namespace DiscordRichPresence
 
 		private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
 		{
+			if (self is InfiniteTowerRun infRun)
+            {
+				CurrentSimulacrumWave = infRun.waveIndex + 1;
+            }
 			CurrentChargeLevel = 0;
 
 			if (CurrentScene != null)
 			{
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, false, PluginConfig.TeleporterStatusEntry.Value);
 			}
+
+			orig(self);
+		}
+
+		private static void EscapeSequenceController_BeginEscapeSequence(On.RoR2.EscapeSequenceController.orig_BeginEscapeSequence orig, EscapeSequenceController self)
+		{
+			MoonDetonationController = self;
+			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
+
+			orig(self);
+		}
+
+		private static void InfiniteTowerRun_BeginNextWave(On.RoR2.InfiniteTowerRun.orig_BeginNextWave orig, InfiniteTowerRun self)
+		{
+			CurrentSimulacrumWave = self.waveIndex + 1;
+			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, false, PluginConfig.TeleporterStatusEntry.Value);
 
 			orig(self);
 		}
@@ -202,8 +219,11 @@ namespace DiscordRichPresence
 				return;
 			}
 
+			MoonDetonationController = null;
+			CurrentSimulacrumWave = 0;
 			if (arg1.name == "title" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
+				LoggerEXT.LogInfo("SET TITLE NO MP");
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence);
 			}
 			else if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
@@ -219,5 +239,5 @@ namespace DiscordRichPresence
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading logbook");
 			}
 		}
-    }
+	}
 }
