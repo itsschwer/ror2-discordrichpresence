@@ -3,9 +3,9 @@ Adds Discord Rich Presence functionality to Risk of Rain 2.
 ## Features
 - Displays the current stage's icon, name, and subtitle, the currently selected difficulty, the currently selected character, and the current run time.
 - Has a unique presence for different menu states (currently idling in the menu, choosing a character, and reading the logbook).
-- Allows invitation of users via Discord.
+- Allows invitation of users via Discord (requires both the sender and receiver to have the mod for this to work).
 
-A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this!
+A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this! (Otherwise, it can be found at `BepInEx/config/com.cuno.discord.cfg`)
 
 If you experience any issues, please report them! I can be contacted on the RoR2 Modding Discord server, at Cuno#9958.
 
@@ -39,4 +39,4 @@ Invitation via Discord
 ## Credits
 
 - Some stage photos are provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing).
-- Initial repository code taken from DarkKronicle's fork of WhelanB's repository (if you are either of these users and have issue with me using your code, please do contact me!).
+- Initial repository code taken from [DarkKronicle's fork](https://github.com/DarkKronicle/RoR2-Discord-RP) of [WhelanB's repository](https://github.com/WhelanB/RoR2-Discord-RP) (if you are either of these users and have issue with me using your code, please do contact me!).
