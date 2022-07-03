@@ -22,7 +22,7 @@ namespace DiscordRichPresence
 
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
 
-	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.0.1")]
+	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.1.0")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)] // Client-sided
 
@@ -49,6 +49,8 @@ namespace DiscordRichPresence
 
 		public static Button TestButton;
 
+		public static DiscordRichPresencePlugin Instance { get; private set; }
+
         public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
 
         public enum TeleporterStatus : byte
@@ -60,6 +62,7 @@ namespace DiscordRichPresence
 
 		public void Awake()
 		{
+			Instance = this;
 			LoggerEXT = Logger;
 			Logger.LogInfo("Starting Discord Rich Presence...");
 
@@ -150,7 +153,7 @@ namespace DiscordRichPresence
             if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Charge)
             {
 				CurrentChargeLevel = (float)Math.Round(self.chargeFraction, 2);
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true, PluginConfig.TeleporterStatusEntry.Value);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
 			}
 
 			orig(self);
@@ -174,7 +177,7 @@ namespace DiscordRichPresence
 
 			if (CurrentScene != null)
 			{
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, true, PluginConfig.TeleporterStatusEntry.Value);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, false, PluginConfig.TeleporterStatusEntry.Value);
 			}
 
 			orig(self);

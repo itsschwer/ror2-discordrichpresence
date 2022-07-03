@@ -10,24 +10,25 @@ using R2API.Utils;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused, DiscordRichPresencePlugin.TeleporterStatus whatToShow = DiscordRichPresencePlugin.TeleporterStatus.None)
+		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused, TeleporterStatus whatToShow = TeleporterStatus.None)
 		{
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
-			richPresence.Assets.LargeImageText = Language.GetString(scene.subtitleToken);
+			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version; //Language.GetString(scene.subtitleToken);
 
 			richPresence.Details = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-			if (whatToShow == DiscordRichPresencePlugin.TeleporterStatus.Boss && DiscordRichPresencePlugin.CurrentBoss != "None")
+			if (whatToShow == TeleporterStatus.Boss && CurrentBoss != "None")
 			{
-				richPresence.Details = "Fighting " + DiscordRichPresencePlugin.CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				richPresence.Details = "Fighting " + CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
-			else if (whatToShow == DiscordRichPresencePlugin.TeleporterStatus.Charge && DiscordRichPresencePlugin.CurrentChargeLevel > 0)
+			else if (whatToShow == TeleporterStatus.Charge && CurrentChargeLevel > 0)
             {
-				richPresence.Details = "Charging teleporter (" + DiscordRichPresencePlugin.CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 			}
 
 			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
@@ -50,9 +51,9 @@ namespace DiscordRichPresence.Utils
 			richPresence.Assets = new Assets()
 			{
 				LargeImageKey = "riskofrain2", //lobby
-				LargeImageText = "In Menu"
+				LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
 			};
-			richPresence.Details = DiscordRichPresencePlugin.PluginConfig.MainMenuIdleMessageEntry.Value;
+			richPresence.Details = PluginConfig.MainMenuIdleMessageEntry.Value;
 			if (details != "")
             {
 				richPresence.Details = details;
@@ -78,7 +79,7 @@ namespace DiscordRichPresence.Utils
 			richPresence.Assets = new Assets()
 			{
 				LargeImageKey = "riskofrain2", //lobby
-				LargeImageText = "Join!",
+				LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
 			};
 			richPresence.Party = new Party()
 			{
@@ -87,7 +88,7 @@ namespace DiscordRichPresence.Utils
 				Size = faceClient.Lobby.NumMembers
 			};
 
-			if (DiscordRichPresencePlugin.PluginConfig.AllowJoiningEntry.Value)
+			if (PluginConfig.AllowJoiningEntry.Value)
 			{
 				richPresence.Secrets = new Secrets()
 				{

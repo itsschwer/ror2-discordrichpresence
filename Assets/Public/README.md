@@ -5,7 +5,9 @@ Adds Discord Rich Presence functionality to Risk of Rain 2.
 - Has a unique presence for different menu states (currently idling in the menu, choosing a character, and reading the logbook).
 - Allows invitation of users via Discord.
 
-A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more.
+A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this!
+
+If you experience any issues, please report them! I can be contacted on the RoR2 Modding Discord server, at Cuno#9958.
 
 ## Images
 Selecting a character
@@ -25,6 +27,11 @@ Invitation via Discord
 ![Invitation via Discord](https://cdn.discordapp.com/attachments/697901894999474308/992476608474644570/unknown.png)
 
 ## Changelog
+
+1.1.0
+- Added Risk of Options support, as a soft dependency
+- Added Discord join support (BOTH the host and the person joining need the mod for this to work, this is very finnicky and only works some of the time)
+- Updated Teleporter Charge to use enums instead of bytes
 
 1.0.1
 - (Re)Release

@@ -49,6 +49,7 @@ namespace DiscordRichPresence.Utils
 				case DifficultyIndex.Hard:
 					return "Monsoon";
 				default:
+					DiscordRichPresencePlugin.LoggerEXT.LogWarning("Unknown difficulty type: " + difficultyIndex.ToString() + " - using default difficulty type");
 					return "Unknown";
 			}
 		}
