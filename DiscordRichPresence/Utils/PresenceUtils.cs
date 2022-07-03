@@ -62,10 +62,13 @@ namespace DiscordRichPresence.Utils
 
 		public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence, string details = "")
 		{
-			richPresence.Assets.LargeImageKey = "riskofrain2"; //lobby
-			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
+            richPresence.Assets = new Assets
+            {
+                LargeImageKey = "riskofrain2", //lobby
+                LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
+            };
 
-			richPresence.Details = PluginConfig.MainMenuIdleMessageEntry.Value;
+            richPresence.Details = PluginConfig.MainMenuIdleMessageEntry.Value;
 			if (details != "")
             {
 				richPresence.Details = details;
@@ -88,10 +91,13 @@ namespace DiscordRichPresence.Utils
 		{
 			richPresence.State = "In Lobby";
 			richPresence.Details = "Preparing";
-			richPresence.Assets.LargeImageKey = "riskofrain2"; //lobby
-			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
+            richPresence.Assets = new Assets
+            {
+                LargeImageKey = "riskofrain2", //lobby
+                LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
+            };
 
-			richPresence.Party.ID = faceClient.Username;
+            richPresence.Party.ID = faceClient.Username;
 			richPresence.Party.Max = faceClient.Lobby.MaxMembers;
 			richPresence.Party.Size = faceClient.Lobby.NumMembers;
 
