@@ -47,6 +47,8 @@ namespace DiscordRichPresence
 
 		public static string CurrentBoss { get; set; } = "None";
 
+		public static EscapeSequenceController MoonDetonationController { get; set; }
+
 		public static Button TestButton;
 
 		public static DiscordRichPresencePlugin Instance { get; private set; }
@@ -105,7 +107,16 @@ namespace DiscordRichPresence
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
 
 			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+            On.RoR2.EscapeSequenceController.BeginEscapeSequence += EscapeSequenceController_BeginEscapeSequence;
 		}
+
+        private static void EscapeSequenceController_BeginEscapeSequence(On.RoR2.EscapeSequenceController.orig_BeginEscapeSequence orig, EscapeSequenceController self)
+        {
+			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
+			MoonDetonationController = self;
+
+			orig(self);
+        }
 
         public static void Dispose()
 		{
@@ -120,6 +131,7 @@ namespace DiscordRichPresence
 			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
 
 			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+			On.RoR2.EscapeSequenceController.BeginEscapeSequence -= EscapeSequenceController_BeginEscapeSequence;
 
 			Client.Dispose();
 		}
@@ -161,9 +173,9 @@ namespace DiscordRichPresence
 
         private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
         {
-			if (InfoTextUtils.GetCharacterInternalName(body.GetDisplayName(), out string formatted) && body == CharacterMaster.readOnlyInstancesList[0].GetBody())
+			if (body == CharacterMaster.readOnlyInstancesList[0].GetBody())
 			{
-				RichPresence.Assets.SmallImageKey = formatted;
+				RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(body.GetDisplayName());
 				RichPresence.Assets.SmallImageText = body.GetDisplayName();
 				Client.SetPresence(RichPresence);
 			}

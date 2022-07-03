@@ -54,55 +54,40 @@ namespace DiscordRichPresence.Utils
 			}
 		}
 
-		public static bool GetCharacterInternalName(string name, out string formatted)
+		public static string GetCharacterInternalName(string name)
 		{
-			formatted = "Unknown";
 			switch (name) // sigh...
 			{
 				case "Acrid":
-					formatted = "croco";
-					return true;
+					return "croco";
 				case "Artificer":
-					formatted = "mage";
-					return true;
+					return "mage";
 				case "Bandit":
-					formatted = "bandit";
-					return true;
+					return "bandit";
 				case "Captain":
-					formatted = "captain";
-					return true;
+					return "captain";
 				case "Commando":
-					formatted = "commando";
-					return true;
+					return "commando";
 				case "Engineer":
-					formatted = "engi";
-					return true;
+					return "engi";
 				case "Heretic":
-					formatted = "heretic";
-					return true;
+					return "heretic";
 				case "Huntress":
-					formatted = "huntress";
-					return true;
+					return "huntress";
 				case "Loader":
-					formatted = "loader";
-					return true;
+					return "loader";
 				case "MUL-T":
-					formatted = "toolbot";
-					return true;
+					return "toolbot";
 				case "Mercenary":
-					formatted = "merc";
-					return true;
+					return "merc";
 				case "REX":
-					formatted = "treebot";
-					return true;
+					return "treebot";
 				case "Railgunner":
-					formatted = "railgunner";
-					return true;
+					return "railgunner";
 				case "Void Fiend":
-					formatted = "voidsurvivor";
-					return true;
+					return "voidsurvivor";
 			}
-			return false;
+			return "unknown";
 		}
 
 		public static string FormatTextStyleTag(string content, StyleTag styleTag)

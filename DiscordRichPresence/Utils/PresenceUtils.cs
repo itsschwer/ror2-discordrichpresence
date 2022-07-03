@@ -21,24 +21,35 @@ namespace DiscordRichPresence.Utils
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version; //Language.GetString(scene.subtitleToken);
 
-			richPresence.Details = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-			if (whatToShow == TeleporterStatus.Boss && CurrentBoss != "None")
-			{
-				richPresence.Details = "Fighting " + CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-			}
-			else if (whatToShow == TeleporterStatus.Charge && CurrentChargeLevel > 0)
-            {
-				richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-			}
-
 			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
 
-			richPresence.Timestamps = new Timestamps();
-			if (scene.sceneType == SceneType.Stage && !isPaused)
-			{
+			if (MoonDetonationController == null)
+            {
+				richPresence.Details = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				if (whatToShow == TeleporterStatus.Boss && CurrentBoss != "None")
+				{
+					richPresence.Details = "Fighting " + CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				}
+				else if (whatToShow == TeleporterStatus.Charge && CurrentChargeLevel > 0)
+				{
+					richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				}
+
+				richPresence.Timestamps = new Timestamps();
+				if (scene.sceneType == SceneType.Stage && !isPaused)
+				{
+					richPresence.Timestamps = new Timestamps()
+					{
+						StartUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() - (ulong)run.GetRunStopwatch()
+					};
+				}
+			}
+			else
+            {
+				richPresence.Details = "Escaping! | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
 				richPresence.Timestamps = new Timestamps()
 				{
-					StartUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() - ((ulong)run.GetRunStopwatch())
+					EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonDetonationController.countdownDuration
 				};
 			}
 
