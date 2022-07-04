@@ -22,7 +22,7 @@ namespace DiscordRichPresence
 
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
 
-	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.1.0")]
+	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.0")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)] // Client-sided
 
@@ -146,6 +146,7 @@ namespace DiscordRichPresence
 		private static void Run_OnServerBossDefeated(On.RoR2.Run.orig_OnServerBossDefeated orig, Run self, BossGroup bossGroup)
         {
 			CurrentBoss = "None";
+			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
 
 			orig(self, bossGroup);
         }
@@ -153,6 +154,7 @@ namespace DiscordRichPresence
         private static void Run_OnServerBossAdded(On.RoR2.Run.orig_OnServerBossAdded orig, Run self, BossGroup bossGroup, CharacterMaster characterMaster)
         {
 			CurrentBoss = characterMaster.GetBody().GetDisplayName();
+			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
 
 			orig(self, bossGroup, characterMaster);
         }
@@ -221,6 +223,7 @@ namespace DiscordRichPresence
 
 			MoonDetonationController = null;
 			CurrentSimulacrumWave = 0;
+			CurrentBoss = "None";
 			if (arg1.name == "title" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
 				LoggerEXT.LogInfo("SET TITLE NO MP");

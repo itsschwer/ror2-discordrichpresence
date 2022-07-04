@@ -50,9 +50,11 @@ namespace DiscordRichPresence.Hooks
 					Assets = new Assets()
 					{
 						LargeImageKey = "riskofrain2",
-						LargeImageText = "Risk of Rain 2"
+						LargeImageText = "DiscordRichPresence v" + DiscordRichPresencePlugin.Instance.Info.Metadata.Version
 					},
-					State = "Starting game..."
+					State = "Starting game...",
+					Secrets = new Secrets(),
+					Timestamps = new Timestamps()
 				};
 
 				DiscordRichPresencePlugin.Client.SetPresence(DiscordRichPresencePlugin.RichPresence);

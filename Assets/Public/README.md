@@ -34,6 +34,8 @@ Invitation via Discord
   - Simulacrum runs will now display the image of the current environment being simulated
 - Added a unique presence for the lunar detonation sequence on Commencement
 - Unknown/custom characters will now display a question mark and the name of the character
+- Fixed an issue where bosses would only update on the presence after pausing after the boss is spawned
+- Fixed an issue where dying while a boss was alive and re-entering the game would not update the presence
 
 1.1.0
 - Added Risk of Options support, as a soft dependency
