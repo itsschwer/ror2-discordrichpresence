@@ -30,12 +30,18 @@ Invitation via Discord
 ## Changelog
 
 1.2.0
+- Added Epic Online Services (EOS) support
+  - Ensures lobby presence will work if crossplay is ON
+  - May have issues, please let me know if you encounter any!
+  - Discord invites and joins may not work while crossplay is enabled
 - Fixed display images for Scorched Acres, Abyssal Depths, and Simulacrum
   - Simulacrum runs will now display the image of the current environment being simulated
 - Added a unique presence for the lunar detonation sequence on Commencement
 - Unknown/custom characters will now display a question mark and the name of the character
+- Unknown/custom difficulties will (should) now display the name of the difficulty instead of "Unknown" (this may not work as intended)
 - Fixed an issue where bosses would only update on the presence after pausing after the boss is spawned
 - Fixed an issue where dying while a boss was alive and re-entering the game would not update the presence
+- Fixed an issue where exiting to the menu from a multiplayer game would cause the main menu presence to display, rather than the lobby presence
 
 1.1.0
 - Added Risk of Options support, as a soft dependency

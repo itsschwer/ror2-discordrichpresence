@@ -21,6 +21,9 @@
     <Reference Include="DiscordRPC">
       <HintPath>..\libs\DiscordRPC.dll</HintPath>
     </Reference>
+    <Reference Include="EOS">
+      <HintPath>..\libs\EOS.dll</HintPath>
+    </Reference>
     <Reference Include="Facepunch.Steamworks">
       <HintPath>..\libs\Facepunch.Steamworks.dll</HintPath>
     </Reference>

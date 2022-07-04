@@ -50,7 +50,7 @@ namespace DiscordRichPresence.Utils
 					return "Monsoon";
 				default:
 					DiscordRichPresencePlugin.LoggerEXT.LogWarning("Unknown difficulty type: " + difficultyIndex.ToString() + " - using default difficulty type");
-					return "Unknown";
+					return difficultyIndex.ToString();
 			}
 		}
 

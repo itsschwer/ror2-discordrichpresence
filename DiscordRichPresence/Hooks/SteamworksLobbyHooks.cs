@@ -23,7 +23,7 @@ namespace DiscordRichPresence.Hooks
 			On.RoR2.SteamworksLobbyManager.LeaveLobby += SteamworksLobbyManager_LeaveLobby;
 		}
 
-		public static void Dispose()
+        public static void Dispose()
         {
 			On.RoR2.SteamworksLobbyManager.OnLobbyCreated -= SteamworksLobbyManager_OnLobbyCreated;
 			On.RoR2.SteamworksLobbyManager.OnLobbyJoined -= SteamworksLobbyManager_OnLobbyJoined;
@@ -56,7 +56,7 @@ namespace DiscordRichPresence.Hooks
 				return;
 			}
 
-			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord join complete");
+			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Successfully joined Steam lobby");
 
 			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
 		}

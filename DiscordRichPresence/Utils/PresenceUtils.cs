@@ -74,36 +74,69 @@ namespace DiscordRichPresence.Utils
 				richPresence.Details = details;
             }
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps
+			CurrentEOSLobby = null;
 
 			richPresence.State = "In Lobby";
-			if (!Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
-            {
-				richPresence.State = "In Menu";
-				richPresence.Secrets = new Secrets();
-				richPresence.Party = new Party(); // Clear secrets and party
-			}
+			richPresence.State = "In Menu";
+			richPresence.Secrets = new Secrets();
+			richPresence.Party = new Party(); // Clear secrets and party
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
 		}
 
-		public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, Facepunch.Steamworks.Client faceClient)
+		public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, Facepunch.Steamworks.Client faceClient, string details = "")
 		{
 			richPresence.State = "In Lobby";
 			richPresence.Details = "Preparing";
-            richPresence.Assets = new Assets
+			if (details != "")
+			{
+				richPresence.Details = details;
+			}
+
+			richPresence.Assets = new Assets
             {
                 LargeImageKey = "riskofrain2", //lobby
                 LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
             };
+			richPresence.Timestamps = new Timestamps(); // Clear timestamps
 
-            richPresence.Party.ID = faceClient.Username;
+			richPresence.Party.ID = faceClient.Username;
 			richPresence.Party.Max = faceClient.Lobby.MaxMembers;
 			richPresence.Party.Size = faceClient.Lobby.NumMembers;
 
 			if (PluginConfig.AllowJoiningEntry.Value)
 			{
 				richPresence.Secrets.JoinSecret = faceClient.Lobby.CurrentLobby.ToString();
+			}
+
+			DiscordRichPresencePlugin.RichPresence = richPresence;
+			client.SetPresence(richPresence);
+		}
+
+		public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, EOSLobbyManager lobbyManager, string details = "")
+		{
+			richPresence.State = "In Lobby";
+			richPresence.Details = "Preparing";
+			if (details != "")
+			{
+				richPresence.Details = details;
+			}
+
+			richPresence.Assets = new Assets
+			{
+				LargeImageKey = "riskofrain2", //lobby
+				LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
+			};
+			richPresence.Timestamps = new Timestamps(); // Clear timestamps
+
+			richPresence.Party.ID = lobbyManager.CurrentLobbyId;
+			richPresence.Party.Max = 4;
+			richPresence.Party.Size = lobbyManager.GetLobbyMembers().Length;
+
+			if (PluginConfig.AllowJoiningEntry.Value)
+			{
+				richPresence.Secrets.JoinSecret = lobbyManager.CurrentLobbyDetails.ToString();
 			}
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;

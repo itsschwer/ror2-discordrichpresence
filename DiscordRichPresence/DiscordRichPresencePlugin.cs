@@ -51,6 +51,8 @@ namespace DiscordRichPresence
 
 		public static int CurrentSimulacrumWave { get; set; }
 
+		public static EOSLobbyManager CurrentEOSLobby { get; set; }
+
 		public static DiscordRichPresencePlugin Instance { get; private set; }
 
         public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
@@ -102,6 +104,7 @@ namespace DiscordRichPresence
 			DiscordClientHooks.Initialize(Client);
 			PauseManagerHooks.Initialize();
 			SteamworksLobbyHooks.Initialize();
+			EOSLobbyHooks.Initialize();
 
             On.RoR2.Run.OnServerBossAdded += Run_OnServerBossAdded;
             On.RoR2.Run.OnServerBossDefeated += Run_OnServerBossDefeated;
@@ -110,6 +113,7 @@ namespace DiscordRichPresence
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
 			On.RoR2.EscapeSequenceController.BeginEscapeSequence += EscapeSequenceController_BeginEscapeSequence;
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
+            On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
 
 			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 		}
@@ -119,6 +123,7 @@ namespace DiscordRichPresence
 			DiscordClientHooks.Dispose(Client);
 			PauseManagerHooks.Dispose();
 			SteamworksLobbyHooks.Dispose();
+			EOSLobbyHooks.Dispose();
 
 			On.RoR2.Run.OnServerBossAdded -= Run_OnServerBossAdded;
 			On.RoR2.Run.OnServerBossDefeated -= Run_OnServerBossDefeated;
@@ -127,6 +132,7 @@ namespace DiscordRichPresence
 			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
 			On.RoR2.EscapeSequenceController.BeginEscapeSequence -= EscapeSequenceController_BeginEscapeSequence;
 			On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
+			On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
 
 			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
 
@@ -214,6 +220,24 @@ namespace DiscordRichPresence
 			orig(self);
 		}
 
+		private static void BaseMainMenuScreen_OnEnter(On.RoR2.UI.MainMenu.BaseMainMenuScreen.orig_OnEnter orig, RoR2.UI.MainMenu.BaseMainMenuScreen self, RoR2.UI.MainMenu.MainMenuController mainMenuController)
+		{
+			if (Facepunch.Steamworks.Client.Instance.Lobby.IsValid) // Messy if-else, but the goal is that when exiting a multiplayer game to the menu, it will display the lobby presence instead of the main menu presence
+            {
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
+			}
+			else if (CurrentEOSLobby != null)
+            {
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, CurrentEOSLobby);
+			}
+			else
+            {
+				PresenceUtils.SetMainMenuPresence(Client, RichPresence);
+			}
+
+			orig(self, mainMenuController);
+		}
+
 		private static void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
 		{
 			if (Client == null || !Client.IsInitialized)
@@ -224,18 +248,25 @@ namespace DiscordRichPresence
 			MoonDetonationController = null;
 			CurrentSimulacrumWave = 0;
 			CurrentBoss = "None";
-			if (arg1.name == "title" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
-            {
-				LoggerEXT.LogInfo("SET TITLE NO MP");
-				PresenceUtils.SetMainMenuPresence(Client, RichPresence);
-			}
-			else if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+			if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
 				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
 			}
-			if (arg1.name == "lobby")
+			else if (arg1.name == "title" && CurrentEOSLobby != null)
+			{
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, CurrentEOSLobby);
+			}
+			if (arg1.name == "lobby" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid && CurrentEOSLobby == null)
             {
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Choosing character");
+			}
+			else if (arg1.name == "lobby" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+			{
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, "Choosing character");
+			}
+			else if (arg1.name == "lobby" && CurrentEOSLobby != null)
+			{
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, CurrentEOSLobby, "Choosing character");
 			}
 			if (arg1.name == "logbook")
             {
