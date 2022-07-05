@@ -8,6 +8,8 @@ Adds Discord Rich Presence functionality to Risk of Rain 2.
 
 A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this! (Otherwise, it can be found at `BepInEx/config/com.cuno.discord.cfg`)
 
+**Mod creators**: if you would like to add your map or character's image to the presence, contact me at the user found below.
+
 If you experience any issues or have any suggestions, please contact me! I can be found on the RoR2 Modding Discord server, at Cuno#9958.
 
 ## Images
@@ -34,9 +36,9 @@ Invitation via Discord
   - Ensures lobby presence will work if crossplay is ON
   - May have issues, please let me know if you encounter any!
   - Discord invites and joins may not work while crossplay is enabled
-- Fixed display images for Scorched Acres, Abyssal Depths, and Simulacrum
+- Fixed display images for Scorched Acres, Abyssal Depths, Void Locus, Planetarium, and Simulacrum
   - Simulacrum runs will now display the image of the current environment being simulated
-- Fixed presence not updating from lobby to in-game if the user is a multiplayer client (non-host)
+- Fixed presence not updating from lobby to in-game if the user is a multiplayer client
   - By extension, this streamlines the character selection process for the small image and fixes it entirely on multiplayer clients
 - Added a unique presence for the lunar detonation sequence on Commencement
 - Unknown/custom characters will now display a question mark and the name of the character

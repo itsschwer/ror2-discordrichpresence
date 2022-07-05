@@ -78,8 +78,6 @@ namespace DiscordRichPresence
 
 			Client.Initialize();
 
-			// LoggerEXT.LogInfo("FAIP: " + EOSLobbyManager.GetFromPlatformSystems().);
-
 			PluginConfig.AllowJoiningEntry = Config.Bind("Options", "Allow Joining", true, "Controls whether or not other users should be allowed to ask to join your game.");
 			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
 			PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "Main Menu Idle Message", "", "Allows you to choose a message to be displayed when idling in the main menu.");
