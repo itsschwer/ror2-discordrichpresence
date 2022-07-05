@@ -24,6 +24,8 @@ namespace DiscordRichPresence.Utils
 			}
 
 			string currentDifficultyString = Language.GetString(DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty).nameToken);
+			richPresence.Timestamps = new Timestamps(); // Clear timestamps
+			richPresence.Secrets = new Secrets(); // Clear lobby join
 			if (MoonDetonationController == null)
             {
 				richPresence.Details = currentDifficultyString;
@@ -36,7 +38,6 @@ namespace DiscordRichPresence.Utils
 					richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + currentDifficultyString;
 				}
 
-				richPresence.Timestamps = new Timestamps(); // Clear timestamps
 				if (scene.sceneType == SceneType.Stage && !isPaused)
 				{
 					richPresence.Timestamps.StartUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() - (ulong)run.GetRunStopwatch();

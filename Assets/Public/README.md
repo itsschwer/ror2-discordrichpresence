@@ -47,6 +47,7 @@ Invitation via Discord
 - Fixed an issue where dying while a boss was alive and starting a new run would not update the presence
 - Fixed an issue where exiting to the menu from a multiplayer game would cause the main menu presence to display, rather than the lobby presence
 - Fixed an issue where the presence would reset to lobby when another player leaves in a multiplayer game
+- Fixed an issue where the user could still receive join requests and send game invites after the run has started
 
 1.1.0
 - Added Risk of Options support, as a soft dependency
