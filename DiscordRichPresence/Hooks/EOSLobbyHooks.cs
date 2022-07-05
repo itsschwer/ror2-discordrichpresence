@@ -68,7 +68,7 @@ namespace DiscordRichPresence.Hooks
 
 			if (Run.instance == null)
 			{
-				if (RichPresence.Details == "Choosing character")
+				if (RichPresence.Details == "Choosing Character")
                 {
 					return;
                 }

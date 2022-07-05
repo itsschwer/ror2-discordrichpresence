@@ -71,7 +71,23 @@ namespace DiscordRichPresence.Hooks
 
 		private static void Client_OnJoin(object sender, JoinMessage args) // Works, but is finnicky...not sure what the trigger is. Needs testing
 		{
-			LoggerEXT.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
+			if (Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+            {
+				LoggerEXT.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
+				ConCommandArgs conArgs = new ConCommandArgs
+				{
+					userArgs = new List<string>() { args.Secret },
+				};
+
+				SteamworksLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);
+			}
+			else
+            {
+				LoggerEXT.LogInfo("Joining Game via Discord - EOS User ID: " + args.Secret);
+				UserID.TryParse(args.Secret, out UserID usId);
+				EOSLobbyManager.GetFromPlatformSystems().JoinLobby(usId);
+			}
+			/*LoggerEXT.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
 			ConCommandArgs conArgs = new ConCommandArgs
 			{
 				userArgs = new List<string>() { args.Secret },
@@ -83,8 +99,8 @@ namespace DiscordRichPresence.Hooks
 			}
 			else
             {
-				EOSLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);
-            }
+				EOSLobbyManager.GetFromPlatformSystems().JoinLobby();
+            }*/
 		}
 	}
 }

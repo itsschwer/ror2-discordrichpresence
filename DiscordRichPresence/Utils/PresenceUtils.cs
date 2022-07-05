@@ -138,13 +138,13 @@ namespace DiscordRichPresence.Utils
 		public static RichPresence UpdateParty(RichPresence richPresence, EOSLobbyManager lobbyManager, bool includeJoinButton = true)
 		{
 			richPresence.Party.ID = lobbyManager.CurrentLobbyId;
-			richPresence.Party.Max = 4;
-			richPresence.Party.Size = lobbyManager.GetLobbyMembers().Length;
+			richPresence.Party.Max = lobbyManager.newestLobbyData.totalMaxPlayers;
+			richPresence.Party.Size = lobbyManager.newestLobbyData.totalPlayerCount; // GetLobbyMembers().Length
 
 			richPresence.Secrets = new Secrets();
 			if (PluginConfig.AllowJoiningEntry.Value && includeJoinButton)
 			{
-				richPresence.Secrets.JoinSecret = lobbyManager.CurrentLobbyDetails.ToString();
+				richPresence.Secrets.JoinSecret = lobbyManager.GetLobbyMembers()[0].ToString();
 			}
 
 			return richPresence;

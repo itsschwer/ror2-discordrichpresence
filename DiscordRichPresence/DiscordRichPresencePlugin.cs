@@ -145,19 +145,19 @@ namespace DiscordRichPresence
 			}
 			if (arg1.name == "lobby" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid && !IsInEOSLobby(out EOSLobbyManager _))
             {
-				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Choosing character");
+				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Choosing Character");
 			}
 			else if (arg1.name == "lobby" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
 			{
-				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, "Choosing character");
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, "Choosing Character");
 			}
 			else if (arg1.name == "lobby" && IsInEOSLobby(out EOSLobbyManager lobbyManager))
 			{
-				PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager, "Choosing character");
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager, "Choosing Character");
 			}
 			if (arg1.name == "logbook")
             {
-				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading logbook");
+				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading Logbook");
 			}
 			else if (Run.instance != null && CurrentScene != null && (Facepunch.Steamworks.Client.Instance.Lobby.IsValid || IsInEOSLobby(out EOSLobbyManager _)))
             {

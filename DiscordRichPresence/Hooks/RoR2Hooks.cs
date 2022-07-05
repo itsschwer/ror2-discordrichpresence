@@ -47,7 +47,7 @@ namespace DiscordRichPresence.Hooks
 			orig(self, bossGroup, characterMaster);
 		}
 
-		// We use this method because it provides a robust update system
+		// We use this method because it provides a robust update system that updates only when we need it to; that is, when the teleporter is active and charging
 		// Additionally, comparing with CurrentChargeLevel prevents unnecessary presence updates (which would lead to ratelimiting)
 		private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
 		{
@@ -71,14 +71,14 @@ namespace DiscordRichPresence.Hooks
 
 		private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
 		{
+			orig(self); // Move here to update stage before call (? - test; else, try Run.instance)
+
 			CurrentChargeLevel = 0;
 
 			if (CurrentScene != null)
 			{
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self);
 			}
-
-			orig(self);
 		}
 
 		private static void EscapeSequenceController_BeginEscapeSequence(On.RoR2.EscapeSequenceController.orig_BeginEscapeSequence orig, EscapeSequenceController self)

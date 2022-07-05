@@ -20,7 +20,7 @@ namespace DiscordRichPresence.Hooks
 
 		private static void OnGamePaused()
 		{
-			if (Run.instance != null && Client.CurrentPresence != null && CurrentScene != null)
+			if (Run.instance != null && CurrentScene != null)
 			{
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true);
 			}
@@ -28,7 +28,7 @@ namespace DiscordRichPresence.Hooks
 
 		private static void OnGameUnPaused()
 		{
-			if (Run.instance != null && Client.CurrentPresence != null && CurrentScene != null)
+			if (Run.instance != null && CurrentScene != null)
 			{
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
 			}
