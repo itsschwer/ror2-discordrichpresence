@@ -2,12 +2,8 @@
 using RoR2;
 using UnityEngine.SceneManagement;
 using DiscordRPC;
-using DiscordRPC.Message;
 using DiscordRPC.Unity;
-using UnityEngine;
-using System;
 using R2API.Utils;
-using System.Collections.Generic;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using DiscordRichPresence.Hooks;
@@ -18,11 +14,11 @@ using DiscordRichPresence.Utils;
 
 namespace DiscordRichPresence
 {
+	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.0")]
+
 	[BepInDependency("com.bepis.r2api")]
 
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
-
-	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.0")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)] // Client-sided
 
@@ -34,28 +30,24 @@ namespace DiscordRichPresence
 
 		public static RichPresence RichPresence { get; set; }
 
+		public static EscapeSequenceController MoonDetonationController { get; set; }
+
+		public static DiscordRichPresencePlugin Instance { get; private set; }
+
+        public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
+
+		public static float CurrentChargeLevel { get; set; }
+
+		public static string CurrentBoss { get; set; }
+
 		public struct PluginConfig
-        {
+		{
 			public static ConfigEntry<bool> AllowJoiningEntry { get; set; }
 
 			public static ConfigEntry<TeleporterStatus> TeleporterStatusEntry { get; set; }
 
 			public static ConfigEntry<string> MainMenuIdleMessageEntry { get; set; }
 		}
-
-		public static float CurrentChargeLevel { get; set; }
-
-		public static string CurrentBoss { get; set; } = "None";
-
-		public static EscapeSequenceController MoonDetonationController { get; set; }
-
-		public static int CurrentSimulacrumWave { get; set; }
-
-		public static EOSLobbyManager CurrentEOSLobby { get; set; }
-
-		public static DiscordRichPresencePlugin Instance { get; private set; }
-
-        public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
 
 		public enum TeleporterStatus : byte
         {
@@ -71,7 +63,7 @@ namespace DiscordRichPresence
 			Logger.LogInfo("Starting Discord Rich Presence...");
 
 			UnityNamedPipe pipe = new UnityNamedPipe();
-			Client = new DiscordRpcClient("992086428240580720", -1, null, true, pipe);
+			Client = new DiscordRpcClient("992086428240580720", client: pipe);
 			Client.RegisterUriScheme("632360");
 
 			RichPresence = new RichPresence()
@@ -85,6 +77,8 @@ namespace DiscordRichPresence
 			Client.SetPresence(RichPresence);
 
 			Client.Initialize();
+
+			// LoggerEXT.LogInfo("FAIP: " + EOSLobbyManager.GetFromPlatformSystems().);
 
 			PluginConfig.AllowJoiningEntry = Config.Bind("Options", "Allow Joining", true, "Controls whether or not other users should be allowed to ask to join your game.");
 			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
@@ -101,38 +95,22 @@ namespace DiscordRichPresence
 
 		private static void InitializeHooks()
         {
-			DiscordClientHooks.Initialize(Client);
-			PauseManagerHooks.Initialize();
-			SteamworksLobbyHooks.Initialize();
-			EOSLobbyHooks.Initialize();
-
-            On.RoR2.Run.OnServerBossAdded += Run_OnServerBossAdded;
-            On.RoR2.Run.OnServerBossDefeated += Run_OnServerBossDefeated;
-			On.RoR2.Run.BeginStage += Run_BeginStage;
-            On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
-            On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
-			On.RoR2.EscapeSequenceController.BeginEscapeSequence += EscapeSequenceController_BeginEscapeSequence;
-            On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
-            On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
+			DiscordClientHooks.AddHooks(Client);
+			PauseManagerHooks.AddHooks();
+			SteamworksLobbyHooks.AddHooks();
+			EOSLobbyHooks.AddHooks();
+			RoR2Hooks.AddHooks();
 
 			SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
 		}
 
         public static void Dispose()
 		{
-			DiscordClientHooks.Dispose(Client);
-			PauseManagerHooks.Dispose();
-			SteamworksLobbyHooks.Dispose();
-			EOSLobbyHooks.Dispose();
-
-			On.RoR2.Run.OnServerBossAdded -= Run_OnServerBossAdded;
-			On.RoR2.Run.OnServerBossDefeated -= Run_OnServerBossDefeated;
-			On.RoR2.Run.BeginStage -= Run_BeginStage;
-			On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
-			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
-			On.RoR2.EscapeSequenceController.BeginEscapeSequence -= EscapeSequenceController_BeginEscapeSequence;
-			On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
-			On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
+			DiscordClientHooks.RemoveHooks(Client);
+			PauseManagerHooks.RemoveHooks();
+			SteamworksLobbyHooks.RemoveHooks();
+			EOSLobbyHooks.RemoveHooks();
+			RoR2Hooks.RemoveHooks();
 
 			SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
 
@@ -149,95 +127,6 @@ namespace DiscordRichPresence
 			Dispose();
 		}
 
-		private static void Run_OnServerBossDefeated(On.RoR2.Run.orig_OnServerBossDefeated orig, Run self, BossGroup bossGroup)
-        {
-			CurrentBoss = "None";
-			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
-
-			orig(self, bossGroup);
-        }
-
-        private static void Run_OnServerBossAdded(On.RoR2.Run.orig_OnServerBossAdded orig, Run self, BossGroup bossGroup, CharacterMaster characterMaster)
-        {
-			CurrentBoss = characterMaster.GetBody().GetDisplayName();
-			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
-
-			orig(self, bossGroup, characterMaster);
-        }
-
-        private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
-        {
-            if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Charge)
-            {
-				CurrentChargeLevel = (float)Math.Round(self.chargeFraction, 2);
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
-			}
-
-			orig(self);
-        }
-
-        private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
-        {
-			if (body == CharacterMaster.readOnlyInstancesList[0].GetBody())
-			{
-				RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(body.GetDisplayName());
-				RichPresence.Assets.SmallImageText = body.GetDisplayName();
-				Client.SetPresence(RichPresence);
-			}
-
-			orig(self, body);
-		}
-
-		private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
-		{
-			if (self is InfiniteTowerRun infRun)
-            {
-				CurrentSimulacrumWave = infRun.waveIndex + 1;
-            }
-			CurrentChargeLevel = 0;
-
-			if (CurrentScene != null)
-			{
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, false, PluginConfig.TeleporterStatusEntry.Value);
-			}
-
-			orig(self);
-		}
-
-		private static void EscapeSequenceController_BeginEscapeSequence(On.RoR2.EscapeSequenceController.orig_BeginEscapeSequence orig, EscapeSequenceController self)
-		{
-			MoonDetonationController = self;
-			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, false, PluginConfig.TeleporterStatusEntry.Value);
-
-			orig(self);
-		}
-
-		private static void InfiniteTowerRun_BeginNextWave(On.RoR2.InfiniteTowerRun.orig_BeginNextWave orig, InfiniteTowerRun self)
-		{
-			CurrentSimulacrumWave = self.waveIndex + 1;
-			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self, false, PluginConfig.TeleporterStatusEntry.Value);
-
-			orig(self);
-		}
-
-		private static void BaseMainMenuScreen_OnEnter(On.RoR2.UI.MainMenu.BaseMainMenuScreen.orig_OnEnter orig, RoR2.UI.MainMenu.BaseMainMenuScreen self, RoR2.UI.MainMenu.MainMenuController mainMenuController)
-		{
-			if (Facepunch.Steamworks.Client.Instance.Lobby.IsValid) // Messy if-else, but the goal is that when exiting a multiplayer game to the menu, it will display the lobby presence instead of the main menu presence
-            {
-				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
-			}
-			else if (CurrentEOSLobby != null)
-            {
-				PresenceUtils.SetLobbyPresence(Client, RichPresence, CurrentEOSLobby);
-			}
-			else
-            {
-				PresenceUtils.SetMainMenuPresence(Client, RichPresence);
-			}
-
-			orig(self, mainMenuController);
-		}
-
 		private static void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
 		{
 			if (Client == null || !Client.IsInitialized)
@@ -246,17 +135,17 @@ namespace DiscordRichPresence
 			}
 
 			MoonDetonationController = null;
-			CurrentSimulacrumWave = 0;
-			CurrentBoss = "None";
+			CurrentBoss = "";
+			CurrentChargeLevel = 0;
 			if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
 				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
 			}
-			else if (arg1.name == "title" && CurrentEOSLobby != null)
+			else if (arg1.name == "title" && IsInEOSLobby(out EOSLobbyManager lobbyManager))
 			{
-				PresenceUtils.SetLobbyPresence(Client, RichPresence, CurrentEOSLobby);
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager);
 			}
-			if (arg1.name == "lobby" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid && CurrentEOSLobby == null)
+			if (arg1.name == "lobby" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid && !IsInEOSLobby(out EOSLobbyManager _))
             {
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Choosing character");
 			}
@@ -264,14 +153,24 @@ namespace DiscordRichPresence
 			{
 				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, "Choosing character");
 			}
-			else if (arg1.name == "lobby" && CurrentEOSLobby != null)
+			else if (arg1.name == "lobby" && IsInEOSLobby(out EOSLobbyManager lobbyManager))
 			{
-				PresenceUtils.SetLobbyPresence(Client, RichPresence, CurrentEOSLobby, "Choosing character");
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager, "Choosing character");
 			}
 			if (arg1.name == "logbook")
             {
 				PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading logbook");
 			}
+			else if (Run.instance != null && CurrentScene != null && (Facepunch.Steamworks.Client.Instance.Lobby.IsValid || IsInEOSLobby(out EOSLobbyManager _)))
+            {
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+			}
 		}
-	}
+
+		public static bool IsInEOSLobby(out EOSLobbyManager lobbyManager)
+        {
+			lobbyManager = EOSLobbyManager.GetFromPlatformSystems();
+            return lobbyManager != null && lobbyManager.isInLobby;
+        }
+    }
 }

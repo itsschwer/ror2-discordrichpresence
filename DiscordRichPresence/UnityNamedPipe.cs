@@ -23,7 +23,7 @@ namespace DiscordRPC.Unity
 
 		public int ConnectedPipe { get; private set; }
 
-		private volatile bool _isDisposed = false;
+		private volatile bool _isDisposed;
 
 		public bool Connect(int pipe)
 		{
@@ -82,7 +82,7 @@ namespace DiscordRPC.Unity
 				string sandbox = doSandbox ? GetPipeSandbox() : "";
 				if (doSandbox && sandbox == null)
 				{
-					Logger.Trace("Skipping sandbox because this platform does not support it.");
+					Logger.Trace("Skipping sandbox because this platform does not support it");
 					return false;
 				}
 
@@ -124,7 +124,7 @@ namespace DiscordRPC.Unity
 				return;
 			}
 
-			Logger.Trace("Disposing Stream");
+			Logger.Trace("Disposing stream");
 			_isDisposed = true;
 			Close();
 		}
@@ -194,7 +194,7 @@ namespace DiscordRPC.Unity
 			}
 			catch (IOException io)
 			{
-				Logger.Error("Failed to write frame because of a IO Exception: {0}", io.Message);
+				Logger.Error("Failed to write frame due to IOException: {0}", io.Message);
 			}
 			catch (ObjectDisposedException)
 			{
@@ -202,7 +202,7 @@ namespace DiscordRPC.Unity
 			}
 			catch (InvalidOperationException)
 			{
-				Logger.Warning("Failed to write frame because of a invalid operation");
+				Logger.Warning("Failed to write frame because of an invalid operation");
 			}
 
 			//We must have failed the try catch

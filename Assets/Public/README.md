@@ -36,12 +36,15 @@ Invitation via Discord
   - Discord invites and joins may not work while crossplay is enabled
 - Fixed display images for Scorched Acres, Abyssal Depths, and Simulacrum
   - Simulacrum runs will now display the image of the current environment being simulated
+- Fixed presence not updating from lobby to in-game if the user is a multiplayer client (non-host)
+  - By extension, this streamlines the character selection process for the small image and fixes it entirely on multiplayer clients
 - Added a unique presence for the lunar detonation sequence on Commencement
 - Unknown/custom characters will now display a question mark and the name of the character
-- Unknown/custom difficulties will (should) now display the name of the difficulty instead of "Unknown" (this may not work as intended)
+- Unknown/custom difficulties will now display the name of the difficulty instead of "Unknown"
 - Fixed an issue where bosses would only update on the presence after pausing after the boss is spawned
-- Fixed an issue where dying while a boss was alive and re-entering the game would not update the presence
+- Fixed an issue where dying while a boss was alive and starting a new run would not update the presence
 - Fixed an issue where exiting to the menu from a multiplayer game would cause the main menu presence to display, rather than the lobby presence
+- Fixed an issue where the presence would reset to lobby when another player leaves in a multiplayer game
 
 1.1.0
 - Added Risk of Options support, as a soft dependency

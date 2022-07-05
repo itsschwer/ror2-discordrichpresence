@@ -1,22 +1,13 @@
-﻿using BepInEx;
-using RoR2;
-using UnityEngine.SceneManagement;
+﻿using RoR2;
 using DiscordRPC;
-using DiscordRPC.Message;
-using DiscordRPC.Unity;
-using UnityEngine;
 using System;
-using R2API.Utils;
-using System.Collections.Generic;
-using BepInEx.Configuration;
-using BepInEx.Logging;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused, TeleporterStatus whatToShow = TeleporterStatus.None)
+		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false)
 		{
 			string sceneImageKey = scene.baseSceneName;
 			if (sceneImageKey.StartsWith("it"))
@@ -27,21 +18,22 @@ namespace DiscordRichPresence.Utils
 			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version; //Language.GetString(scene.subtitleToken);
 
 			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
-			if (CurrentSimulacrumWave > 0)
+			if (run is InfiniteTowerRun infRun && infRun.waveIndex > 0)
             {
-				richPresence.State = string.Format("Wave {0} - {1}", CurrentSimulacrumWave, Language.GetString(scene.nameToken));
+				richPresence.State = string.Format("Wave {0} - {1}", infRun.waveIndex, Language.GetString(scene.nameToken));
 			}
 
+			string currentDifficultyString = Language.GetString(DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty).nameToken);
 			if (MoonDetonationController == null)
             {
-				richPresence.Details = InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
-				if (whatToShow == TeleporterStatus.Boss && CurrentBoss != "None")
+				richPresence.Details = currentDifficultyString;
+				if (PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Boss && CurrentBoss != "")
 				{
-					richPresence.Details = "Fighting " + CurrentBoss + " | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+					richPresence.Details = "Fighting " + CurrentBoss + " | " + currentDifficultyString;
 				}
-				else if (whatToShow == TeleporterStatus.Charge && CurrentChargeLevel > 0)
+				else if (PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Charge && CurrentChargeLevel > 0)
 				{
-					richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+					richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + currentDifficultyString;
 				}
 
 				richPresence.Timestamps = new Timestamps(); // Clear timestamps
@@ -52,7 +44,7 @@ namespace DiscordRichPresence.Utils
 			}
 			else
             {
-				richPresence.Details = "Escaping! | " + InfoTextUtils.GetDifficultyString(run.selectedDifficulty);
+				richPresence.Details = "Escaping! | " + currentDifficultyString;
 				richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonDetonationController.countdownDuration;
 			}
 
@@ -73,10 +65,9 @@ namespace DiscordRichPresence.Utils
             {
 				richPresence.Details = details;
             }
-			richPresence.Timestamps = new Timestamps(); // Clear timestamps
-			CurrentEOSLobby = null;
 
-			richPresence.State = "In Lobby";
+			richPresence.Timestamps = new Timestamps(); // Clear timestamps
+
 			richPresence.State = "In Menu";
 			richPresence.Secrets = new Secrets();
 			richPresence.Party = new Party(); // Clear secrets and party
@@ -101,14 +92,7 @@ namespace DiscordRichPresence.Utils
             };
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps
 
-			richPresence.Party.ID = faceClient.Username;
-			richPresence.Party.Max = faceClient.Lobby.MaxMembers;
-			richPresence.Party.Size = faceClient.Lobby.NumMembers;
-
-			if (PluginConfig.AllowJoiningEntry.Value)
-			{
-				richPresence.Secrets.JoinSecret = faceClient.Lobby.CurrentLobby.ToString();
-			}
+			richPresence = UpdateParty(richPresence, faceClient);
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
@@ -130,17 +114,40 @@ namespace DiscordRichPresence.Utils
 			};
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps
 
+			richPresence = UpdateParty(richPresence, lobbyManager);
+
+			DiscordRichPresencePlugin.RichPresence = richPresence;
+			client.SetPresence(richPresence);
+		}
+
+		public static RichPresence UpdateParty(RichPresence richPresence, Facepunch.Steamworks.Client faceClient, bool includeJoinButton = true)
+        {
+			richPresence.Party.ID = faceClient.Username;
+			richPresence.Party.Max = faceClient.Lobby.MaxMembers;
+			richPresence.Party.Size = faceClient.Lobby.NumMembers;
+
+			richPresence.Secrets = new Secrets();
+			if (PluginConfig.AllowJoiningEntry.Value && includeJoinButton)
+			{
+				richPresence.Secrets.JoinSecret = faceClient.Lobby.CurrentLobby.ToString();
+			}
+
+			return richPresence;
+		}
+
+		public static RichPresence UpdateParty(RichPresence richPresence, EOSLobbyManager lobbyManager, bool includeJoinButton = true)
+		{
 			richPresence.Party.ID = lobbyManager.CurrentLobbyId;
 			richPresence.Party.Max = 4;
 			richPresence.Party.Size = lobbyManager.GetLobbyMembers().Length;
 
-			if (PluginConfig.AllowJoiningEntry.Value)
+			richPresence.Secrets = new Secrets();
+			if (PluginConfig.AllowJoiningEntry.Value && includeJoinButton)
 			{
 				richPresence.Secrets.JoinSecret = lobbyManager.CurrentLobbyDetails.ToString();
 			}
 
-			DiscordRichPresencePlugin.RichPresence = richPresence;
-			client.SetPresence(richPresence);
+			return richPresence;
 		}
 	}
 }

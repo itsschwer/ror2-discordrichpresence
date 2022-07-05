@@ -1,21 +1,15 @@
-﻿using BepInEx;
-using RoR2;
-using UnityEngine.SceneManagement;
-using DiscordRPC;
-using DiscordRPC.Message;
-using DiscordRPC.Unity;
-using UnityEngine;
-using System;
-using R2API.Utils;
-using System.Collections.Generic;
-using BepInEx.Configuration;
+﻿using RoR2;
 using DiscordRichPresence.Utils;
+using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
 {
+	/// <summary>
+	/// Handles Steamworks lobby connections and methods.
+	/// </summary>
     public static class SteamworksLobbyHooks
     {
-        public static void Initialize()
+        public static void AddHooks()
         {
 			On.RoR2.SteamworksLobbyManager.OnLobbyCreated += SteamworksLobbyManager_OnLobbyCreated;
 			On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined;
@@ -23,7 +17,7 @@ namespace DiscordRichPresence.Hooks
 			On.RoR2.SteamworksLobbyManager.LeaveLobby += SteamworksLobbyManager_LeaveLobby;
 		}
 
-        public static void Dispose()
+        public static void RemoveHooks()
         {
 			On.RoR2.SteamworksLobbyManager.OnLobbyCreated -= SteamworksLobbyManager_OnLobbyCreated;
 			On.RoR2.SteamworksLobbyManager.OnLobbyJoined -= SteamworksLobbyManager_OnLobbyJoined;
@@ -40,11 +34,9 @@ namespace DiscordRichPresence.Hooks
 				return;
 			}
 
-			ulong lobbyID = Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby;
+			LoggerEXT.LogInfo("Discord broadcasting new Steam lobby with ID " + Facepunch.Steamworks.Client.Instance.Lobby.CurrentLobby);
 
-			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord broadcasting new Steam lobby with ID " + lobbyID);
-
-			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
+			PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private static void SteamworksLobbyManager_OnLobbyJoined(On.RoR2.SteamworksLobbyManager.orig_OnLobbyJoined orig, SteamworksLobbyManager self, bool success)
@@ -56,9 +48,9 @@ namespace DiscordRichPresence.Hooks
 				return;
 			}
 
-			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Successfully joined Steam lobby");
+			LoggerEXT.LogInfo("Successfully joined Steam lobby");
 
-			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
+			PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
 		}
 
 		private static void SteamworksLobbyManager_OnLobbyChanged(On.RoR2.SteamworksLobbyManager.orig_OnLobbyChanged orig, SteamworksLobbyManager self)
@@ -70,21 +62,29 @@ namespace DiscordRichPresence.Hooks
 				return;
 			}
 
-			DiscordRichPresencePlugin.LoggerEXT.LogInfo("Discord re-broadcasting Steam Lobby");
+			LoggerEXT.LogInfo("Discord re-broadcasting Steam lobby");
 
-			PresenceUtils.SetLobbyPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, Facepunch.Steamworks.Client.Instance);
+			if (Run.instance == null)
+            {
+				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
+			}
+			else
+            {
+				RichPresence = PresenceUtils.UpdateParty(RichPresence, Facepunch.Steamworks.Client.Instance, false);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+			}
 		}
 
 		private static void SteamworksLobbyManager_LeaveLobby(On.RoR2.SteamworksLobbyManager.orig_LeaveLobby orig, SteamworksLobbyManager self)
 		{
 			orig(self);
 
-			if (DiscordRichPresencePlugin.Client == null || !DiscordRichPresencePlugin.Client.IsInitialized)
+			if (Client == null || !Client.IsInitialized)
 			{
 				return;
 			}
 
-			PresenceUtils.SetMainMenuPresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence);
+			PresenceUtils.SetMainMenuPresence(Client, RichPresence);
 		}
 	}
 }

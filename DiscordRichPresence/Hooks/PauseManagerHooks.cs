@@ -1,27 +1,18 @@
-﻿using BepInEx;
-using RoR2;
-using UnityEngine.SceneManagement;
-using DiscordRPC;
-using DiscordRPC.Message;
-using DiscordRPC.Unity;
-using UnityEngine;
-using System;
-using R2API.Utils;
-using System.Collections.Generic;
-using BepInEx.Configuration;
+﻿using RoR2;
 using DiscordRichPresence.Utils;
+using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
 {
 	public static class PauseManagerHooks
 	{
-		public static void Initialize()
+		public static void AddHooks()
 		{
 			PauseManager.onPauseStartGlobal += OnGamePaused; // Workaround to pause time on RPC when in pause menu
 			PauseManager.onPauseEndGlobal += OnGameUnPaused;
 		}
 
-		public static void Dispose()
+		public static void RemoveHooks()
         {
 			PauseManager.onPauseStartGlobal -= OnGamePaused;
 			PauseManager.onPauseEndGlobal -= OnGameUnPaused;
@@ -29,17 +20,17 @@ namespace DiscordRichPresence.Hooks
 
 		private static void OnGamePaused()
 		{
-			if (Run.instance != null && DiscordRichPresencePlugin.Client.CurrentPresence != null && DiscordRichPresencePlugin.CurrentScene != null)
+			if (Run.instance != null && Client.CurrentPresence != null && CurrentScene != null)
 			{
-				PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, true, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true);
 			}
 		}
 
 		private static void OnGameUnPaused()
 		{
-			if (Run.instance != null && DiscordRichPresencePlugin.Client.CurrentPresence != null && DiscordRichPresencePlugin.CurrentScene != null)
+			if (Run.instance != null && Client.CurrentPresence != null && CurrentScene != null)
 			{
-				PresenceUtils.SetStagePresence(DiscordRichPresencePlugin.Client, DiscordRichPresencePlugin.RichPresence, DiscordRichPresencePlugin.CurrentScene, Run.instance, false, DiscordRichPresencePlugin.PluginConfig.TeleporterStatusEntry.Value);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
 			}
 		}
 	}
