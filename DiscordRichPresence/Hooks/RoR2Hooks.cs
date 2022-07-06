@@ -62,9 +62,13 @@ namespace DiscordRichPresence.Hooks
 
 		private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
 		{
-			RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(LocalUserManager.GetFirstLocalUser().cachedMasterController.master.GetBody().GetDisplayName());
-			RichPresence.Assets.SmallImageText = LocalUserManager.GetFirstLocalUser().cachedMasterController.master.GetBody().GetDisplayName();
-			Client.SetPresence(RichPresence);
+			CharacterBody localBody = LocalUserManager.GetFirstLocalUser().cachedMasterController.master.GetBody();
+			if (localBody != null)
+            {
+				RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
+				RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
+				Client.SetPresence(RichPresence);
+			}
 
 			orig(self, body);
 		}
