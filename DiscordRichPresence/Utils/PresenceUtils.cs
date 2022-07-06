@@ -21,7 +21,16 @@ namespace DiscordRichPresence.Utils
 			string currentDifficultyString = Language.GetString(DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty).nameToken);
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps
 			richPresence.Secrets = new Secrets(); // Clear lobby join
-			if (MoonDetonationController == null)
+
+			if (scene.baseSceneName == "outro")
+			{
+				MoonCountdownTimer = 0;
+				richPresence.Assets.LargeImageKey = "moon2";
+				richPresence.Details = "Watching Credits";
+				richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
+			}
+
+			if (MoonCountdownTimer <= 0)
             {
 				richPresence.Details = currentDifficultyString;
 				if (PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Boss && CurrentBoss != "")
@@ -41,7 +50,7 @@ namespace DiscordRichPresence.Utils
 			else
             {
 				richPresence.Details = "Escaping! | " + currentDifficultyString;
-				richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonDetonationController.countdownDuration;
+				richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonCountdownTimer;
 			}
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;

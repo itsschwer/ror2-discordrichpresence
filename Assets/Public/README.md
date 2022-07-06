@@ -33,6 +33,8 @@ Invitation via Discord
 
 1.2.1
 - Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons 
+- (Hopefully) fix lunar detonation presence
+- Add outro presence
 
 1.2.0
 - Added Epic Online Services (EOS) support

@@ -30,13 +30,13 @@ namespace DiscordRichPresence
 
 		public static RichPresence RichPresence { get; set; }
 
-		public static EscapeSequenceController MoonDetonationController { get; set; }
-
 		public static DiscordRichPresencePlugin Instance { get; private set; }
 
         public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
 
 		public static float CurrentChargeLevel { get; set; }
+
+		public static float MoonCountdownTimer { get; set; }
 
 		public static string CurrentBoss { get; set; }
 
@@ -132,9 +132,9 @@ namespace DiscordRichPresence
 				return;
 			}
 
-			MoonDetonationController = null;
 			CurrentBoss = "";
 			CurrentChargeLevel = 0;
+			MoonCountdownTimer = 0;
 			if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
 				PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);

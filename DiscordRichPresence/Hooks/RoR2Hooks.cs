@@ -14,7 +14,7 @@ namespace DiscordRichPresence.Hooks
 			On.RoR2.Run.BeginStage += Run_BeginStage;
 			On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
 			On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
-			On.RoR2.EscapeSequenceController.BeginEscapeSequence += EscapeSequenceController_BeginEscapeSequence;
+            On.RoR2.EscapeSequenceController.SetCountdownTime += EscapeSequenceController_SetCountdownTime;
 			On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
 			On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
 		}
@@ -26,7 +26,7 @@ namespace DiscordRichPresence.Hooks
 			On.RoR2.Run.BeginStage -= Run_BeginStage;
 			On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
 			On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
-			On.RoR2.EscapeSequenceController.BeginEscapeSequence -= EscapeSequenceController_BeginEscapeSequence;
+			On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
 			On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
 			On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
 		}
@@ -85,12 +85,11 @@ namespace DiscordRichPresence.Hooks
 			}
 		}
 
-		private static void EscapeSequenceController_BeginEscapeSequence(On.RoR2.EscapeSequenceController.orig_BeginEscapeSequence orig, EscapeSequenceController self)
+		private static void EscapeSequenceController_SetCountdownTime(On.RoR2.EscapeSequenceController.orig_SetCountdownTime orig, EscapeSequenceController self, double secondsRemaining)
 		{
-			MoonDetonationController = self;
-			PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+			MoonCountdownTimer = (float)secondsRemaining;
 
-			orig(self);
+			orig(self, secondsRemaining);
 		}
 
 		private static void InfiniteTowerRun_BeginNextWave(On.RoR2.InfiniteTowerRun.orig_BeginNextWave orig, InfiniteTowerRun self)
