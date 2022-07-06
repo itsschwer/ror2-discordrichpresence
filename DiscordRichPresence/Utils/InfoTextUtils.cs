@@ -55,6 +55,20 @@ namespace DiscordRichPresence.Utils
 					return "railgunner";
 				case "Void Fiend":
 					return "voidsurvivor";
+				case "Enforcer":
+					return "enforcer";
+				case "CHEF":
+					return "chef";
+				case "Miner":
+					return "miner";
+				case "Paladin":
+					return "paladin";
+				case "HAND":
+					return "han-d";
+				case "Sniper":
+					return "sniper";
+				case "Bomber":
+					return "bomber";
 			}
 			return "unknown";
 		}

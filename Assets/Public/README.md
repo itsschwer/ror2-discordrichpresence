@@ -36,12 +36,13 @@ Invitation via Discord
   - Ensures lobby presence will work if crossplay is ON
   - May have issues, please let me know if you encounter any!
   - Discord invites and joins may not work while crossplay is enabled
+- Added new, higher-resolution images for stages, as well as 7 modded character images (thanks Zan!)
 - Fixed display images for Scorched Acres, Abyssal Depths, Void Locus, Planetarium, and Simulacrum
   - Simulacrum runs will now display the image of the current environment being simulated
 - Fixed presence not updating from lobby to in-game if the user is a multiplayer client
   - By extension, this streamlines the character selection process for the small image and fixes it entirely on multiplayer clients
 - Added a unique presence for the lunar detonation sequence on Commencement
-- Unknown/custom characters will now display a question mark and the name of the character
+- Unknown/custom characters will now display a question mark and the name of the character (if the character does not have an image in the rich presence database)
 - Unknown/custom difficulties will now display the name of the difficulty instead of "Unknown"
 - Fixed an issue where bosses would only update on the presence after pausing after the boss is spawned
 - Fixed an issue where dying while a boss was alive and starting a new run would not update the presence
@@ -59,5 +60,6 @@ Invitation via Discord
 
 ## Credits
 
-- Some stage photos are provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing).
+- Stage photos are provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing), and Zan#1601.
+- Bomber, Chef, Miner, Paladin, HAN-D, Sniper, and Enforcer character images provided by Zan#1601.
 - Initial repository code taken from [DarkKronicle's fork](https://github.com/DarkKronicle/RoR2-Discord-RP) of [WhelanB's repository](https://github.com/WhelanB/RoR2-Discord-RP) (if you are either of these users and have issue with me using your code, please do contact me!).

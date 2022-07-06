@@ -9,12 +9,7 @@ namespace DiscordRichPresence.Utils
     {
 		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false)
 		{
-			string sceneImageKey = scene.baseSceneName;
-			if (sceneImageKey.StartsWith("it"))
-            {
-				sceneImageKey = sceneImageKey.Substring(2);
-            }
-			richPresence.Assets.LargeImageKey = sceneImageKey;
+			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version; //Language.GetString(scene.subtitleToken);
 
 			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
