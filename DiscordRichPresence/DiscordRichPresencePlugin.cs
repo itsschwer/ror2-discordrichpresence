@@ -14,7 +14,7 @@ using DiscordRichPresence.Utils;
 
 namespace DiscordRichPresence
 {
-	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.0")]
+	[BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.1")]
 
 	[BepInDependency("com.bepis.r2api")]
 

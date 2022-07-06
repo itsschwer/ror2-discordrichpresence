@@ -69,6 +69,18 @@ namespace DiscordRichPresence.Utils
 					return "sniper";
 				case "Bomber":
 					return "bomber";
+				case "Nemesis Enforcer":
+					return "nemesisenforcer";
+				case "Chirr":
+					return "chirr";
+				case "Executioner":
+					return "executioner";
+				case "Nemmando":
+					return "nemmando";
+				case "An Arbiter":
+					return "anarbiter";
+				case "Red Mist":
+					return "redmist";
 			}
 			return "unknown";
 		}
