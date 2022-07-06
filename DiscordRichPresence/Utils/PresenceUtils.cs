@@ -50,7 +50,7 @@ namespace DiscordRichPresence.Utils
 
 		public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence, string details = "")
 		{
-            richPresence.Assets = new Assets
+			richPresence.Assets = new Assets
             {
                 LargeImageKey = "riskofrain2", //lobby
                 LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version

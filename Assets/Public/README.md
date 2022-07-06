@@ -31,6 +31,9 @@ Invitation via Discord
 
 ## Changelog
 
+1.2.1
+- Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons 
+
 1.2.0
 - Added Epic Online Services (EOS) support
   - Ensures lobby presence will work if crossplay is ON

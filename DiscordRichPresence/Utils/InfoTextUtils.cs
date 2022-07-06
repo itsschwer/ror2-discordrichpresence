@@ -75,7 +75,7 @@ namespace DiscordRichPresence.Utils
 					return "chirr";
 				case "Executioner":
 					return "executioner";
-				case "Nemmando":
+				case "Nemesis Commando":
 					return "nemmando";
 				case "An Arbiter":
 					return "anarbiter";
