@@ -62,7 +62,7 @@ namespace DiscordRichPresence.Hooks
 
 		private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
 		{
-			CharacterBody localBody = LocalUserManager.GetFirstLocalUser().cachedMasterController.master.GetBody();
+			CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
 			if (localBody != null)
             {
 				RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
@@ -75,14 +75,14 @@ namespace DiscordRichPresence.Hooks
 
 		private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
 		{
-			orig(self); // Move here to update stage before call (? - test; else, try Run.instance)
-
 			CurrentChargeLevel = 0;
 
-			if (CurrentScene != null)
+			if (Run.instance != null && CurrentScene != null)
 			{
-				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self);
+				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance); // self, remove Run.instance check
 			}
+
+			orig(self);
 		}
 
 		private static void EscapeSequenceController_SetCountdownTime(On.RoR2.EscapeSequenceController.orig_SetCountdownTime orig, EscapeSequenceController self, double secondsRemaining)

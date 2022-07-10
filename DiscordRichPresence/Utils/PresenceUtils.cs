@@ -7,7 +7,7 @@ namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false)
+		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
 		{
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
 			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version; //Language.GetString(scene.subtitleToken);
@@ -26,11 +26,15 @@ namespace DiscordRichPresence.Utils
 			{
 				MoonCountdownTimer = 0;
 				richPresence.Assets.LargeImageKey = "moon2";
-				richPresence.Details = "Watching Credits";
+				richPresence.Details = "Credits";
 				richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
 			}
-
-			if (MoonCountdownTimer <= 0)
+			else if (MoonCountdownTimer > 0)
+            {
+				richPresence.Details = "Escaping! | " + currentDifficultyString;
+				richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonCountdownTimer;
+			}
+			else
             {
 				richPresence.Details = currentDifficultyString;
 				if (PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Boss && CurrentBoss != "")
@@ -46,11 +50,6 @@ namespace DiscordRichPresence.Utils
 				{
 					richPresence.Timestamps.StartUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() - (ulong)run.GetRunStopwatch();
 				}
-			}
-			else
-            {
-				richPresence.Details = "Escaping! | " + currentDifficultyString;
-				richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonCountdownTimer;
 			}
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;
@@ -98,6 +97,8 @@ namespace DiscordRichPresence.Utils
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps
 
 			richPresence = UpdateParty(richPresence, faceClient);
+
+			LoggerEXT.LogInfo(client.CurrentUser);
 
 			DiscordRichPresencePlugin.RichPresence = richPresence;
 			client.SetPresence(richPresence);
