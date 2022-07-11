@@ -1,102 +1,81 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DiscordRichPresence.Utils
 {
     public static class InfoTextUtils
     {
+        public static List<string> CharactersWithAssets = new List<string>()
+        {
+            "Acrid",
+            "Artificer",
+            "Bandit",
+            "Captain",
+            "Commando",
+            "Engineer",
+            "Heretic",
+            "Huntress",
+            "Loader",
+            "MUL-T",
+            "Mercenary",
+            "REX",
+            "Railgunner",
+            "Void Fiend",
+            "Enforcer",
+            "CHEF",
+            "Miner",
+            "Paladin",
+            "HAN-D",
+            "Sniper",
+            "Bomber",
+            "Nemesis Enforcer",
+            "Nemesis Commando",
+            "Chirr",
+            "Executioner",
+            "An Arbiter",
+            "Red Mist"
+        };
+
         [Flags]
-		public enum StyleTag : int
+        public enum StyleTag : int
         {
-			Damage = 1,
-			Healing = 2,
-			Utility = 4,
-			Health = 8,
-			Stack = 16,
-			Mono = 32,
-			Death = 64,
-			UserSetting = 128,
-			Artifact = 256,
-			Sub = 512,
-			Event = 1024,
-			WorldEvent = 2048,
-			KeywordName = 4096,
-			Shrine = 8192
+            Damage = 1,
+            Healing = 2,
+            Utility = 4,
+            Health = 8,
+            Stack = 16,
+            Mono = 32,
+            Death = 64,
+            UserSetting = 128,
+            Artifact = 256,
+            Sub = 512,
+            Event = 1024,
+            WorldEvent = 2048,
+            KeywordName = 4096,
+            Shrine = 8192
         }
 
-		public static string GetCharacterInternalName(string name)
-		{
-			switch (name) // sigh...
-			{
-				case "Acrid":
-					return "croco";
-				case "Artificer":
-					return "mage";
-				case "Bandit":
-					return "bandit";
-				case "Captain":
-					return "captain";
-				case "Commando":
-					return "commando";
-				case "Engineer":
-					return "engi";
-				case "Heretic":
-					return "heretic";
-				case "Huntress":
-					return "huntress";
-				case "Loader":
-					return "loader";
-				case "MUL-T":
-					return "toolbot";
-				case "Mercenary":
-					return "merc";
-				case "REX":
-					return "treebot";
-				case "Railgunner":
-					return "railgunner";
-				case "Void Fiend":
-					return "voidsurvivor";
-				case "Enforcer":
-					return "enforcer";
-				case "CHEF":
-					return "chef";
-				case "Miner":
-					return "miner";
-				case "Paladin":
-					return "paladin";
-				case "HAND":
-					return "han-d";
-				case "Sniper":
-					return "sniper";
-				case "Bomber":
-					return "bomber";
-				case "Nemesis Enforcer":
-					return "nemesisenforcer";
-				case "Chirr":
-					return "chirr";
-				case "Executioner":
-					return "executioner";
-				case "Nemesis Commando":
-					return "nemmando";
-				case "An Arbiter":
-					return "anarbiter";
-				case "Red Mist":
-					return "redmist";
-			}
-			return "unknown";
-		}
-
-		public static string FormatTextStyleTag(string content, StyleTag styleTag)
+        public static string GetCharacterInternalName(string name)
         {
-			string tagString;
-			if (styleTag == StyleTag.Damage || styleTag == StyleTag.Healing || styleTag == StyleTag.Utility || styleTag == StyleTag.Health)
+            if (CharactersWithAssets.Contains(name))
             {
-				tagString = "cIs" + styleTag.ToString();
+                return CharactersWithAssets.Find(c => c == name).ToLower().Replace(" ", "");
             }
-			else
-            {
-				tagString = "c" + styleTag.ToString();
-            }
-			return $"<style={tagString}>{content}</style>";
+            return "unknown";
         }
-	}
+
+        public static string FormatTextStyleTag(string content, StyleTag styleTag)
+        {
+            string tagString;
+            if (styleTag == StyleTag.Damage || styleTag == StyleTag.Healing || styleTag == StyleTag.Utility || styleTag == StyleTag.Health)
+            {
+                tagString = "cIs" + styleTag.ToString();
+            }
+            else
+            {
+                tagString = "c" + styleTag.ToString();
+            }
+            return $"<style={tagString}>{content}</style>";
+        }
+    }
 }

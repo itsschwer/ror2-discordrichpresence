@@ -10,7 +10,7 @@ namespace DiscordRichPresence.Utils
 		public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
 		{
 			richPresence.Assets.LargeImageKey = scene.baseSceneName;
-			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version; //Language.GetString(scene.subtitleToken);
+			richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
 
 			richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
 			if (run is InfiniteTowerRun infRun && infRun.waveIndex > 0)
@@ -37,11 +37,11 @@ namespace DiscordRichPresence.Utils
 			else
             {
 				richPresence.Details = currentDifficultyString;
-				if (PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Boss && CurrentBoss != "")
+				if (PluginConfig.TeleporterStatusEntry.Value == PluginConfig.TeleporterStatus.Boss && CurrentBoss != "")
 				{
 					richPresence.Details = "Fighting " + CurrentBoss + " | " + currentDifficultyString;
 				}
-				else if (PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Charge && CurrentChargeLevel > 0)
+				else if (PluginConfig.TeleporterStatusEntry.Value == PluginConfig.TeleporterStatus.Charge && CurrentChargeLevel > 0)
 				{
 					richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + currentDifficultyString;
 				}
@@ -60,7 +60,7 @@ namespace DiscordRichPresence.Utils
 		{
 			richPresence.Assets = new Assets
             {
-                LargeImageKey = "riskofrain2", //lobby
+                LargeImageKey = "riskofrain2",
                 LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
             };
 
@@ -91,7 +91,7 @@ namespace DiscordRichPresence.Utils
 
 			richPresence.Assets = new Assets
             {
-                LargeImageKey = "riskofrain2", //lobby
+                LargeImageKey = "riskofrain2",
                 LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
             };
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps
@@ -115,7 +115,7 @@ namespace DiscordRichPresence.Utils
 
 			richPresence.Assets = new Assets
 			{
-				LargeImageKey = "riskofrain2", //lobby
+				LargeImageKey = "riskofrain2",
 				LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
 			};
 			richPresence.Timestamps = new Timestamps(); // Clear timestamps

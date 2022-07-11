@@ -51,7 +51,7 @@ namespace DiscordRichPresence.Hooks
 		// Additionally, comparing with CurrentChargeLevel prevents unnecessary presence updates (which would lead to ratelimiting)
 		private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
 		{
-			if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == TeleporterStatus.Charge)
+			if (Math.Round(self.chargeFraction, 2) != CurrentChargeLevel && PluginConfig.TeleporterStatusEntry.Value == PluginConfig.TeleporterStatus.Charge)
 			{
 				CurrentChargeLevel = (float)Math.Round(self.chargeFraction, 2);
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
@@ -62,27 +62,29 @@ namespace DiscordRichPresence.Hooks
 
 		private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
 		{
+			orig(self, body);
+
 			CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
-			if (localBody != null)
+			if (localBody == null)
             {
-				RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
-				RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
-				Client.SetPresence(RichPresence);
+				return;
 			}
 
-			orig(self, body);
+			RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
+			RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
+			Client.SetPresence(RichPresence);
 		}
 
 		private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
 		{
+			orig(self);
+
 			CurrentChargeLevel = 0;
 
 			if (Run.instance != null && CurrentScene != null)
 			{
 				PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance); // self, remove Run.instance check
 			}
-
-			orig(self);
 		}
 
 		private static void EscapeSequenceController_SetCountdownTime(On.RoR2.EscapeSequenceController.orig_SetCountdownTime orig, EscapeSequenceController self, double secondsRemaining)

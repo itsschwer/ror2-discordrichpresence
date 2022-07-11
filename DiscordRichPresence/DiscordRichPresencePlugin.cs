@@ -40,22 +40,6 @@ namespace DiscordRichPresence
 
 		public static string CurrentBoss { get; set; }
 
-		public struct PluginConfig
-		{
-			public static ConfigEntry<bool> AllowJoiningEntry { get; set; }
-
-			public static ConfigEntry<TeleporterStatus> TeleporterStatusEntry { get; set; }
-
-			public static ConfigEntry<string> MainMenuIdleMessageEntry { get; set; }
-		}
-
-		public enum TeleporterStatus : byte
-        {
-            None = 0,
-			Boss = 1,
-			Charge = 2
-        }
-
 		public void Awake()
 		{
 			Instance = this;
@@ -79,7 +63,7 @@ namespace DiscordRichPresence
 			Client.Initialize();
 
 			PluginConfig.AllowJoiningEntry = Config.Bind("Options", "Allow Joining", true, "Controls whether or not other users should be allowed to ask to join your game.");
-			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
+			PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", PluginConfig.TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
 			PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "Main Menu Idle Message", "", "Allows you to choose a message to be displayed when idling in the main menu.");
 
 			if (RiskOfOptionsUtils.IsEnabled)
