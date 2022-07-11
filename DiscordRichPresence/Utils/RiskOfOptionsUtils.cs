@@ -1,6 +1,6 @@
-﻿using System;
-using BepInEx.Bootstrap;
+﻿using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using System;
 
 namespace DiscordRichPresence.Utils
 {
