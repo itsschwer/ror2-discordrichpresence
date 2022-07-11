@@ -1,74 +1,70 @@
+Adds Discord Rich Presence functionality to Risk of Rain 2.
 
-# Discord Rich Presence
+## Features
+- Displays the current stage's icon, name, and subtitle, the currently selected difficulty, the currently selected character, and the current run time.
+- Has a unique presence for different menu states (currently idling in the menu, choosing a character, and reading the logbook).
+- Allows invitation of users via Discord (requires both the sender and receiver to have the mod for this to work).
+- Other unique presences depending on the game status.
 
-| [Install using Thunderstore Mod Manager](ror2mm://v1/install/thunderstore.io/WhelanB/DiscordRichPresence/3.0.0/) | [Download from Thunderstore](https://thunderstore.io/package/WhelanB/DiscordRichPresence/) |
-|----------------------------------------|----------------------------|
-## About
+A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this! (Otherwise, it can be found at `BepInEx/config/com.cuno.discord.cfg`)
 
-Risk of Rain 2 does not currently expose game information to Discord, and so this mod was created in order to integrate Risk of Rain 2 with Discord's rich presence system. Show your Discord friends your current run state, invite channels to play, or ask to join a friend, all via Discord!
+**Mod creators**: if you would like to add your map or character's image to the presence, contact me at the user found below.
 
-## Current Features
-Join your friends through Discord, either by inviting them or having them ask to join your game!
+If you experience any issues or have any suggestions, please contact me! I can be found on the RoR2 Modding Discord server, at Cuno#9958.
 
-Rich presence is provided for Classic Runs. The current stage count and stage name are exposed, and icons give an at-a-glance view of the current stage. Hovering over the icon reveals the stage subtitle. The current elapsed run time is shown on stages.
+## Images
+Selecting a character
 
+![Selecting a character](https://cdn.discordapp.com/attachments/697901894999474308/992475444295237692/unknown.png)
 
-Example of Presence on Menu:
+Playing in a stage
 
-![Menu Presence Sample](/README/NoPresence.PNG)
+![Playing in a stage](https://cdn.discordapp.com/attachments/697901894999474308/992475537584963735/unknown.png)
 
-Example of Presence in run:
+Idling in a lobby
 
-![Run Presence Sample](README/Presence.PNG)
+![Idling in a lobby](https://cdn.discordapp.com/attachments/697901894999474308/992475648675303445/unknown.png)
 
-Example of Presence in Multiplayer Lobby:
+Invitation via Discord
 
-![Lobby Presence Sample](README/Lobby.PNG)
+![Invitation via Discord](https://cdn.discordapp.com/attachments/697901894999474308/992476608474644570/unknown.png)
 
-Example of Channel Invite:
+## Changelog
 
-![Invite Presence Sample](README/Invite.PNG)
+1.2.1
+- Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons 
+- (Hopefully) fix lunar detonation presence
+- Add outro presence
 
-## Command
-The mod provides a privacy setting via console commands, `discord_privacy_level`, which takes a single integer as an argument:
+1.2.0
+- Added Epic Online Services (EOS) support
+  - Ensures lobby presence will work if crossplay is ON
+  - May have issues, please let me know if you encounter any!
+  - Discord invites and joins may not work while crossplay is enabled
+- Added new, higher-resolution images for stages, as well as 7 modded character images (thanks Zan!)
+- Fixed display images for Scorched Acres, Abyssal Depths, Void Locus, Planetarium, and Simulacrum
+  - Simulacrum runs will now display the image of the current environment being simulated
+- Fixed presence not updating from lobby to in-game if the user is a multiplayer client
+  - By extension, this streamlines the character selection process for the small image and fixes it entirely on multiplayer clients
+- Added a unique presence for the lunar detonation sequence on Commencement
+- Unknown/custom characters will now display a question mark and the name of the character (if the character does not have an image in the rich presence database)
+- Unknown/custom difficulties will now display the name of the difficulty instead of "Unknown"
+- Fixed an issue where bosses would only update on the presence after pausing after the boss is spawned
+- Fixed an issue where dying while a boss was alive and starting a new run would not update the presence
+- Fixed an issue where exiting to the menu from a multiplayer game would cause the main menu presence to display, rather than the lobby presence
+- Fixed an issue where the presence would reset to lobby when another player leaves in a multiplayer game
+- Fixed an issue where the user could still receive join requests and send game invites after the run has started
 
-| State         | Value | Outcome                                                                            |
-|---------------|-------|------------------------------------------------------------------------------------|
-| Disabled      | 0     | no rich presence is broadcast                                                      |
-| Run Presence  | 1     | run and lobby information is broadcast, but invites and join requests are disabled |
-| Full Presence | 2     | run and lobby information is broadcast, invites and join requests are allowed      |
+1.1.0
+- Added Risk of Options support, as a soft dependency
+- Added Discord join support (BOTH the host and the person joining need the mod for this to work, this is very finnicky and only works some of the time)
+- Updated Teleporter Charge to use enums instead of bytes
 
-## Build
-Requires R2API, BepInEx and [Discord-RPC-Csharp](https://github.com/Lachee/discord-rpc-csharp) (barebones Unity3D dlls, see readme)
-
-## Installation
-
-| [Install using Thunderstore Mod Manager](ror2mm://v1/install/thunderstore.io/WhelanB/DiscordRichPresence/3.0.0/) | [Download from Thunderstore](https://thunderstore.io/package/WhelanB/DiscordRichPresence/) |
-|----------------------------------------|----------------------------|
-
-
-## Versions
-
-- Version 3.0.1 updates mod to support Survivors of the Void
-
-- Version 3.0.0 updates mod to support the Risk of Rain 2 Anniversary Update
-
-- Version 2.3.0 fixes elapsed time on pause, adds additional presence for menus
-
-- Version 2.2.X introduces proper elapsed run time
-
-- Version 2.1.1 fixes small issues - STABLE
-
-- Version 2.1.X introduces elapsed run time
-
-- Version 2.X.X introduces lobby features
-
-- Versions 1.X.X include run cards only
-
-## Known Issues
-
-ConCommand currently disabled for Anniversary Update
+1.0.1
+- (Re)Release
 
 ## Credits
 
-Some stage photos are provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing).
+- Stage photos are provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing), and Zan#1601.
+- Bomber, Chef, Miner, Paladin, HAN-D, Sniper, and Enforcer character images provided by Zan#1601.
+- Initial repository code taken from [DarkKronicle's fork](https://github.com/DarkKronicle/RoR2-Discord-RP) of [WhelanB's repository](https://github.com/WhelanB/RoR2-Discord-RP) (if you are either of these users and have issue with me using your code, please do contact me!).
