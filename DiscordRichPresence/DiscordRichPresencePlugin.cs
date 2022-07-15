@@ -132,11 +132,11 @@ namespace DiscordRichPresence
             }
             else if (arg1.name == "lobby" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
-                PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, "Choosing Character");
+                PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, false, "Choosing Character");
             }
             else if (arg1.name == "lobby" && IsInEOSLobby(out EOSLobbyManager lobbyManager))
             {
-                PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager, "Choosing Character");
+                PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager, false, "Choosing Character");
             }
             if (arg1.name == "logbook")
             {

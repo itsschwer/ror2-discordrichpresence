@@ -20,7 +20,7 @@ namespace DiscordRichPresence.Utils
             "Mercenary",
             "REX",
             "Railgunner",
-            "Void Fiend",
+            //"Void Fiend",
             "Enforcer",
             "CHEF",
             "Miner",
@@ -36,27 +36,30 @@ namespace DiscordRichPresence.Utils
             "Red Mist"
         };
 
-        [Flags]
-        public enum StyleTag : int
+        public enum StyleTag : byte
         {
             Damage = 1,
             Healing = 2,
-            Utility = 4,
-            Health = 8,
-            Stack = 16,
-            Mono = 32,
-            Death = 64,
-            UserSetting = 128,
-            Artifact = 256,
-            Sub = 512,
-            Event = 1024,
-            WorldEvent = 2048,
-            KeywordName = 4096,
-            Shrine = 8192
+            Utility = 3,
+            Health = 4,
+            Stack = 5,
+            Mono = 6,
+            Death = 7,
+            UserSetting = 8,
+            Artifact = 9,
+            Sub = 10,
+            Event = 11,
+            WorldEvent = 12,
+            KeywordName = 13,
+            Shrine = 14
         }
 
         public static string GetCharacterInternalName(string name)
         {
+            if (name == "「V??oid Fiend』")
+            {
+                return "voidfiend";
+            }
             if (CharactersWithAssets.Contains(name))
             {
                 return CharactersWithAssets.Find(c => c == name).ToLower().Replace(" ", "");
@@ -67,7 +70,7 @@ namespace DiscordRichPresence.Utils
         public static string FormatTextStyleTag(string content, StyleTag styleTag)
         {
             string tagString;
-            if (styleTag == StyleTag.Damage || styleTag == StyleTag.Healing || styleTag == StyleTag.Utility || styleTag == StyleTag.Health)
+            if ((byte)styleTag >= 1 && (byte)styleTag <= 4)
             {
                 tagString = "cIs" + styleTag.ToString();
             }

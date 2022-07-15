@@ -70,6 +70,7 @@ namespace DiscordRichPresence.Hooks
             {
                 if (RichPresence.Details == "Choosing Character")
                 {
+                    PresenceUtils.SetLobbyPresence(Client, RichPresence, self, true);
                     return;
                 }
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, self);

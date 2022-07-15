@@ -33,7 +33,7 @@ Invitation via Discord
 
 1.2.1
 - Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons 
-- (Hopefully) fix lunar detonation presence
+- Fix lunar detonation presence
 - Add outro (credits) presence
 - Fixed an issue where multiplayer clients would have their stage number behind by one
 - Fixed an issue where Steam lobbies would update presence incorrectly after a user joins
@@ -67,5 +67,5 @@ Invitation via Discord
 
 ## Credits
 
-- Stage photos are provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing). Higher quality photos provided by Zan#1601.
+- Some stage photos provided by [The Risk of Rain 2 Fandom Wiki](https://riskofrain2.fandom.com/wiki/Risk_of_Rain_2_Wiki) under [CC BY-NC-SA 3.0](https://www.fandom.com/licensing). Higher quality photos provided by Zan#1601.
 - Initial repository code taken from [DarkKronicle's fork](https://github.com/DarkKronicle/RoR2-Discord-RP) of [WhelanB's repository](https://github.com/WhelanB/RoR2-Discord-RP) (if you are either of these users and have issue with me using your code, please do contact me!).

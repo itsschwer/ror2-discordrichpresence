@@ -68,6 +68,7 @@ namespace DiscordRichPresence.Hooks
             {
                 if (RichPresence.Details == "Choosing Character")
                 {
+                    PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, true);
                     return;
                 }
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);

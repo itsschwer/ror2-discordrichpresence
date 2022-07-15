@@ -80,8 +80,12 @@ namespace DiscordRichPresence.Utils
             client.SetPresence(richPresence);
         }
 
-        public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, Facepunch.Steamworks.Client faceClient, string details = "")
+        public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, Facepunch.Steamworks.Client faceClient, bool justParty = false, string details = "")
         {
+            if (justParty)
+            {
+                goto Party;
+            }
             richPresence.State = "In Lobby";
             richPresence.Details = "Preparing";
             if (details != "")
@@ -96,16 +100,19 @@ namespace DiscordRichPresence.Utils
             };
             richPresence.Timestamps = new Timestamps(); // Clear timestamps
 
+            Party:
             richPresence = UpdateParty(richPresence, faceClient);
-
-            LoggerEXT.LogInfo(client.CurrentUser);
 
             DiscordRichPresencePlugin.RichPresence = richPresence;
             client.SetPresence(richPresence);
         }
 
-        public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, EOSLobbyManager lobbyManager, string details = "")
+        public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, EOSLobbyManager lobbyManager, bool justParty = false, string details = "")
         {
+            if (justParty)
+            {
+                goto Party;
+            }
             richPresence.State = "In Lobby";
             richPresence.Details = "Preparing";
             if (details != "")
@@ -120,6 +127,7 @@ namespace DiscordRichPresence.Utils
             };
             richPresence.Timestamps = new Timestamps(); // Clear timestamps
 
+            Party:
             richPresence = UpdateParty(richPresence, lobbyManager);
 
             DiscordRichPresencePlugin.RichPresence = richPresence;
