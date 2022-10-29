@@ -37,6 +37,7 @@ Invitation via Discord
 - Add outro (credits) presence
 - Fixed an issue where multiplayer clients would have their stage number behind by one
 - Fixed an issue where Steam lobbies would update presence incorrectly after a user joins
+- Fixed a few behind-the-scenes errors that did not affect gameplay
 
 1.2.0
 - Added Epic Online Services (EOS) support

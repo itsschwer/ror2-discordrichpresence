@@ -9,6 +9,15 @@ namespace DiscordRichPresence.Utils
     {
         public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
         {
+            if (Run.instance == null)
+            {
+                LoggerEXT.LogError("Run instance is null. Check for its null status before passing it as a parameter. Stack trace follows:");
+            }
+            if (scene == null)
+            {
+                LoggerEXT.LogError("Scene is null. Check for its null status before passing it as a parameter. Stack trace follows:");
+            }
+
             richPresence.Assets.LargeImageKey = scene.baseSceneName;
             richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
 

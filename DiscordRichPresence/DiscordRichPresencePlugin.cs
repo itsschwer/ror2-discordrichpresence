@@ -83,6 +83,7 @@ namespace DiscordRichPresence
             RoR2Hooks.AddHooks();
 
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+            Stage.onServerStageBegin += Stage_onServerStageBegin;
         }
 
         public static void Dispose()
@@ -94,6 +95,7 @@ namespace DiscordRichPresence
             RoR2Hooks.RemoveHooks();
 
             SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
+            Stage.onServerStageBegin -= Stage_onServerStageBegin;
 
             Client.Dispose();
         }
@@ -144,6 +146,20 @@ namespace DiscordRichPresence
             }
             else if (Run.instance != null && CurrentScene != null && (Facepunch.Steamworks.Client.Instance.Lobby.IsValid || IsInEOSLobby(out EOSLobbyManager _)))
             {
+                LoggerEXT.LogInfo("Scene Manager Active Scene Changed Called With Value: " + (Run.instance.stageClearCount + 1));
+                PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+            }
+        }
+
+        private static void Stage_onServerStageBegin(Stage obj)
+        {
+
+            CurrentChargeLevel = 0;
+
+            if (CurrentScene != null && Run.instance != null) // Test: Stage 1 --> 2 on 2 player MP
+            {
+                LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Value: " + obj.sceneDef.stageOrder);
+                LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Run Instance Value: " + (Run.instance.stageClearCount + 1));
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
         }
