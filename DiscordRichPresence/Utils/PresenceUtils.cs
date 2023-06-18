@@ -41,7 +41,10 @@ namespace DiscordRichPresence.Utils
             else if (MoonCountdownTimer > 0)
             {
                 richPresence.Details = "Escaping! | " + currentDifficultyString;
-                richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonCountdownTimer;
+                if (!isPaused)
+                {
+                    richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonCountdownTimer;
+                }
             }
             else
             {

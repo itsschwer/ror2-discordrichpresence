@@ -4,6 +4,7 @@ using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
 {
+    //Hooks here are not called on pause menu open but rather when game is absolutely paused
     public static class PauseManagerHooks
     {
         public static void AddHooks()

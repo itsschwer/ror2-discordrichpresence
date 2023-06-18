@@ -8,8 +8,9 @@ namespace DiscordRichPresence.Hooks
     public static class RoR2Hooks
     {
 
-        // Multiplayer Checklist:
-        // Stage updating [ ]
+        // Checklist:
+        // Multiplayer - Stage updating [ ]
+        // Whether or not obj.isChampion is true for non-TP boss spawns (see: CharacterBody_onBodyX)
         // 
         
         public static void AddHooks()
@@ -18,23 +19,46 @@ namespace DiscordRichPresence.Hooks
             CharacterBody.onBodyDestroyGlobal += CharacterBody_onBodyDestroyGlobal;
             //On.RoR2.Run.OnServerBossAdded += Run_OnServerBossAdded;
             //On.RoR2.Run.OnServerBossDefeated += Run_OnServerBossDefeated;
-            //On.RoR2.Run.BeginStage += Run_BeginStage;
-            //On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
             On.RoR2.EscapeSequenceController.SetCountdownTime += EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
         }
 
-        private static void CharacterMaster_OnBodyDeath(On.RoR2.CharacterMaster.orig_OnBodyDeath orig, CharacterMaster self, CharacterBody body)
+        public static void RemoveHooks()
         {
-            LoggerEXT.LogInfo("Character death body:" + body.GetDisplayName());
+            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
+            CharacterBody.onBodyDestroyGlobal -= CharacterBody_onBodyDestroyGlobal;
+            //On.RoR2.Run.OnServerBossAdded -= Run_OnServerBossAdded;
+            //On.RoR2.Run.OnServerBossDefeated -= Run_OnServerBossDefeated;
+            On.RoR2.PlayerCharacterMasterController.OnBodyStart += PlayerCharacterMasterController_OnBodyStart;
+            On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
+            On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
+            On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
+            On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
+        }
 
-            orig(self, body);
+        private static void PlayerCharacterMasterController_OnBodyStart(On.RoR2.PlayerCharacterMasterController.orig_OnBodyStart orig, PlayerCharacterMasterController self)
+        {
+            LoggerEXT.LogInfo("PCharMastName: " + self.name);
+
+            orig(self);
         }
 
         private static void CharacterBody_onBodyStartGlobal(CharacterBody obj)
         {
+            //Find different method for this that only calls once and calls AFTER character body exists
+            /*CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
+            if (localBody == null)
+            {
+                return;
+            }
+
+            LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
+            RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
+            RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
+            Client.SetPresence(RichPresence);*/
+
             if (obj.isChampion)
             {
                 CurrentBoss = obj.GetDisplayName();
@@ -51,20 +75,7 @@ namespace DiscordRichPresence.Hooks
             }
         }
 
-        public static void RemoveHooks()
-        {
-            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
-            CharacterBody.onBodyDestroyGlobal -= CharacterBody_onBodyDestroyGlobal;
-            //On.RoR2.Run.OnServerBossAdded -= Run_OnServerBossAdded;
-            //On.RoR2.Run.OnServerBossDefeated -= Run_OnServerBossDefeated;
-            //On.RoR2.Run.BeginStage -= Run_BeginStage;
-            //On.RoR2.CharacterMaster.OnBodyStart -= CharacterMaster_OnBodyStart;
-            On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
-            On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
-            On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
-            On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
-        }
-
+        //Following 3 fire client-side only
         private static void Run_OnServerBossDefeated(On.RoR2.Run.orig_OnServerBossDefeated orig, Run self, BossGroup bossGroup)
         {
             CurrentBoss = "";
@@ -81,19 +92,6 @@ namespace DiscordRichPresence.Hooks
             orig(self, bossGroup, characterMaster);
         }
 
-        private static void Run_BeginStage(On.RoR2.Run.orig_BeginStage orig, Run self)
-        {
-            orig(self);
-
-            LoggerEXT.LogInfo("Run Begin Stage Called With Value: " + self.stageClearCount + 1);
-            CurrentChargeLevel = 0;
-
-            if (CurrentScene != null)
-            {
-                PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self);
-            }
-        }
-
         // We use this method because it provides a robust update system that updates only when we need it to; that is, when the teleporter is active and charging
         // Additionally, comparing with CurrentChargeLevel prevents unnecessary presence updates (which would lead to ratelimiting)
         private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
@@ -107,29 +105,15 @@ namespace DiscordRichPresence.Hooks
             orig(self);
         }
 
-        // Need an alternative to this hook because it fires every time enemy spawns
-        private static void CharacterMaster_OnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
-        {
-            orig(self, body);
-
-            CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
-            if (localBody == null)
-            {
-                return;
-            }
-
-            RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
-            RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
-            Client.SetPresence(RichPresence);
-        }
-
         private static void EscapeSequenceController_SetCountdownTime(On.RoR2.EscapeSequenceController.orig_SetCountdownTime orig, EscapeSequenceController self, double secondsRemaining)
         {
-            MoonCountdownTimer = (float)secondsRemaining;
+            MoonCountdownTimer = (float)secondsRemaining + 1;
+            PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
 
             orig(self, secondsRemaining);
         }
 
+        //Simulacrum
         private static void InfiniteTowerRun_BeginNextWave(On.RoR2.InfiniteTowerRun.orig_BeginNextWave orig, InfiniteTowerRun self)
         {
             PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, self);
