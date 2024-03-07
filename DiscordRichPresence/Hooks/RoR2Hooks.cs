@@ -7,48 +7,22 @@ namespace DiscordRichPresence.Hooks
 {
     public static class RoR2Hooks
     {
-
-        // Checklist:
-        // Multiplayer - Stage updating [ ]
-        // Whether or not obj.isChampion is true for non-TP boss spawns (see: CharacterBody_onBodyX)
-        // 
-        
         public static void AddHooks()
         {
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
             CharacterBody.onBodyDestroyGlobal += CharacterBody_onBodyDestroyGlobal;
-            //On.RoR2.Run.OnServerBossAdded += Run_OnServerBossAdded;
-            //On.RoR2.Run.OnServerBossDefeated += Run_OnServerBossDefeated;
+            On.RoR2.Stage.Start += Stage_Start;
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
             On.RoR2.EscapeSequenceController.SetCountdownTime += EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
         }
 
-        public static void RemoveHooks()
+        private static void Stage_Start(On.RoR2.Stage.orig_Start orig, Stage self)
         {
-            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
-            CharacterBody.onBodyDestroyGlobal -= CharacterBody_onBodyDestroyGlobal;
-            //On.RoR2.Run.OnServerBossAdded -= Run_OnServerBossAdded;
-            //On.RoR2.Run.OnServerBossDefeated -= Run_OnServerBossDefeated;
-            On.RoR2.PlayerCharacterMasterController.OnBodyStart += PlayerCharacterMasterController_OnBodyStart;
-            On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
-            On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
-            On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
-            On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
-        }
-
-        private static void PlayerCharacterMasterController_OnBodyStart(On.RoR2.PlayerCharacterMasterController.orig_OnBodyStart orig, PlayerCharacterMasterController self)
-        {
-            LoggerEXT.LogInfo("PCharMastName: " + self.name);
-
             orig(self);
-        }
 
-        private static void CharacterBody_onBodyStartGlobal(CharacterBody obj)
-        {
-            //Find different method for this that only calls once and calls AFTER character body exists
-            /*CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
+            CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
             if (localBody == null)
             {
                 return;
@@ -57,8 +31,23 @@ namespace DiscordRichPresence.Hooks
             LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
             RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
             RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
-            Client.SetPresence(RichPresence);*/
+            Client.SetPresence(RichPresence);
+            PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+        }
 
+        public static void RemoveHooks()
+        {
+            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
+            CharacterBody.onBodyDestroyGlobal -= CharacterBody_onBodyDestroyGlobal;
+            On.RoR2.Stage.Start -= Stage_Start;
+            On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
+            On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
+            On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
+            On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
+        }
+
+        private static void CharacterBody_onBodyStartGlobal(CharacterBody obj)
+        {
             if (obj.isChampion)
             {
                 CurrentBoss = obj.GetDisplayName();
@@ -73,23 +62,6 @@ namespace DiscordRichPresence.Hooks
                 CurrentBoss = "";
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
-        }
-
-        //Following 3 fire client-side only
-        private static void Run_OnServerBossDefeated(On.RoR2.Run.orig_OnServerBossDefeated orig, Run self, BossGroup bossGroup)
-        {
-            CurrentBoss = "";
-            PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
-
-            orig(self, bossGroup);
-        }
-
-        private static void Run_OnServerBossAdded(On.RoR2.Run.orig_OnServerBossAdded orig, Run self, BossGroup bossGroup, CharacterMaster characterMaster)
-        {
-            CurrentBoss = characterMaster.GetBody().GetDisplayName();
-            PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
-
-            orig(self, bossGroup, characterMaster);
         }
 
         // We use this method because it provides a robust update system that updates only when we need it to; that is, when the teleporter is active and charging
@@ -127,9 +99,9 @@ namespace DiscordRichPresence.Hooks
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
             }
-            else if (IsInEOSLobby(out EOSLobbyManager lobbyManager))
+            else if (IsInEOSLobby)
             {
-                PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager);
+                PresenceUtils.SetLobbyPresence(Client, RichPresence, EOSLobbyManager.GetFromPlatformSystems());
             }
             else
             {

@@ -4,7 +4,6 @@ using DiscordRichPresence.Hooks;
 using DiscordRichPresence.Utils;
 using DiscordRPC;
 using DiscordRPC.Unity;
-using R2API.Utils;
 using RoR2;
 using UnityEngine.SceneManagement;
 
@@ -15,11 +14,7 @@ namespace DiscordRichPresence
 {
     [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.1")]
 
-    [BepInDependency("com.bepis.r2api")]
-
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
-
-    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync)] // Client-sided
 
     public class DiscordRichPresencePlugin : BaseUnityPlugin
     {
@@ -38,6 +33,8 @@ namespace DiscordRichPresence
         public static float MoonCountdownTimer { get; set; }
 
         public static string CurrentBoss { get; set; }
+
+        public static bool IsInEOSLobby => EOSLobbyManager.GetFromPlatformSystems() != null && EOSLobbyManager.GetFromPlatformSystems().isInLobby;
 
         public void Awake()
         {
@@ -79,9 +76,9 @@ namespace DiscordRichPresence
             DiscordClientHooks.AddHooks(Client);
             PauseManagerHooks.AddHooks();
             SteamworksLobbyHooks.AddHooks();
-            EOSLobbyHooks.AddHooks();
             RoR2Hooks.AddHooks();
 
+            On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
             Stage.onServerStageBegin += Stage_onServerStageBegin;
         }
@@ -91,9 +88,14 @@ namespace DiscordRichPresence
             DiscordClientHooks.RemoveHooks(Client);
             PauseManagerHooks.RemoveHooks();
             SteamworksLobbyHooks.RemoveHooks();
-            EOSLobbyHooks.RemoveHooks();
             RoR2Hooks.RemoveHooks();
 
+            if (EOSLoginManager.loggedInUserID.ToString() != string.Empty)
+            {
+                EOSLobbyHooks.RemoveHooks();
+            }
+
+            On.RoR2.EOSLoginManager.CompleteConnectLogin -= EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
             SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
             Stage.onServerStageBegin -= Stage_onServerStageBegin;
 
@@ -120,15 +122,18 @@ namespace DiscordRichPresence
             CurrentBoss = "";
             CurrentChargeLevel = 0;
             MoonCountdownTimer = 0;
+
+            EOSLobbyManager lobbyManager = EOSLobbyManager.GetFromPlatformSystems();
+
             if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
             }
-            else if (arg1.name == "title" && IsInEOSLobby(out EOSLobbyManager lobbyManager))
+            else if (arg1.name == "title" && IsInEOSLobby)
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager);
             }
-            if (arg1.name == "lobby" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid && !IsInEOSLobby(out EOSLobbyManager _))
+            if (arg1.name == "lobby" && !Facepunch.Steamworks.Client.Instance.Lobby.IsValid && !IsInEOSLobby)
             {
                 PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Choosing Character");
             }
@@ -136,7 +141,7 @@ namespace DiscordRichPresence
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance, false, "Choosing Character");
             }
-            else if (arg1.name == "lobby" && IsInEOSLobby(out EOSLobbyManager lobbyManager))
+            else if (arg1.name == "lobby" && IsInEOSLobby)
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, lobbyManager, false, "Choosing Character");
             }
@@ -144,7 +149,7 @@ namespace DiscordRichPresence
             {
                 PresenceUtils.SetMainMenuPresence(Client, RichPresence, "Reading Logbook");
             }
-            else if (Run.instance != null && CurrentScene != null && (Facepunch.Steamworks.Client.Instance.Lobby.IsValid || IsInEOSLobby(out EOSLobbyManager _)))
+            else if (Run.instance != null && CurrentScene != null && (Facepunch.Steamworks.Client.Instance.Lobby.IsValid || IsInEOSLobby))
             {
                 LoggerEXT.LogInfo("Scene Manager Active Scene Changed Called With Value: " + (Run.instance.stageClearCount + 1));
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
@@ -153,7 +158,6 @@ namespace DiscordRichPresence
 
         private static void Stage_onServerStageBegin(Stage obj)
         {
-
             CurrentChargeLevel = 0;
 
             if (CurrentScene != null && Run.instance != null) // Test: Stage 1 --> 2 on 2 player MP
@@ -162,12 +166,6 @@ namespace DiscordRichPresence
                 LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Run Instance Value: " + (Run.instance.stageClearCount + 1));
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
-        }
-
-        public static bool IsInEOSLobby(out EOSLobbyManager lobbyManager)
-        {
-            lobbyManager = EOSLobbyManager.GetFromPlatformSystems();
-            return lobbyManager != null && lobbyManager.isInLobby;
         }
     }
 }

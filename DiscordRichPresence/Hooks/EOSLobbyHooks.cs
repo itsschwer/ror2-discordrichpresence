@@ -2,6 +2,7 @@
 using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using RoR2;
+using System;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
@@ -13,18 +14,32 @@ namespace DiscordRichPresence.Hooks
     {
         public static void AddHooks()
         {
-            On.RoR2.EOSLobbyManager.OnLobbyCreated += EOSLobbyManager_OnLobbyCreated;
-            On.RoR2.EOSLobbyManager.OnLobbyJoined += EOSLobbyManager_OnLobbyJoined;
-            On.RoR2.EOSLobbyManager.OnLobbyChanged += EOSLobbyManager_OnLobbyChanged;
-            On.RoR2.EOSLobbyManager.LeaveLobby += EOSLobbyManager_LeaveLobby;
+            try
+            {
+                On.RoR2.EOSLobbyManager.OnLobbyCreated += EOSLobbyManager_OnLobbyCreated;
+                On.RoR2.EOSLobbyManager.OnLobbyJoined += EOSLobbyManager_OnLobbyJoined;
+                On.RoR2.EOSLobbyManager.OnLobbyChanged += EOSLobbyManager_OnLobbyChanged;
+                On.RoR2.EOSLobbyManager.LeaveLobby += EOSLobbyManager_LeaveLobby;
+            }
+            catch (BadImageFormatException)
+            {
+                LoggerEXT.LogError("Couldn't hook EOS methods");
+            }
         }
 
         public static void RemoveHooks()
         {
-            On.RoR2.EOSLobbyManager.OnLobbyCreated -= EOSLobbyManager_OnLobbyCreated;
-            On.RoR2.EOSLobbyManager.OnLobbyJoined -= EOSLobbyManager_OnLobbyJoined;
-            On.RoR2.EOSLobbyManager.OnLobbyChanged -= EOSLobbyManager_OnLobbyChanged;
-            On.RoR2.EOSLobbyManager.LeaveLobby -= EOSLobbyManager_LeaveLobby;
+            try
+            {
+                On.RoR2.EOSLobbyManager.OnLobbyCreated -= EOSLobbyManager_OnLobbyCreated;
+                On.RoR2.EOSLobbyManager.OnLobbyJoined -= EOSLobbyManager_OnLobbyJoined;
+                On.RoR2.EOSLobbyManager.OnLobbyChanged -= EOSLobbyManager_OnLobbyChanged;
+                On.RoR2.EOSLobbyManager.LeaveLobby -= EOSLobbyManager_LeaveLobby;
+            }
+            catch (BadImageFormatException)
+            {
+                LoggerEXT.LogError("Couldn't unhook EOS methods");
+            }
         }
 
         private static void EOSLobbyManager_OnLobbyCreated(On.RoR2.EOSLobbyManager.orig_OnLobbyCreated orig, EOSLobbyManager self, CreateLobbyCallbackInfo data)
@@ -87,6 +102,15 @@ namespace DiscordRichPresence.Hooks
             }
 
             PresenceUtils.SetMainMenuPresence(Client, RichPresence);
+        }
+
+        //Ensures that the game will not load hooks if the user isn't even signed into their Epic account
+        public static void EOSLoginManager_CompleteConnectLogin(On.RoR2.EOSLoginManager.orig_CompleteConnectLogin orig, EOSLoginManager self, ProductUserId localUserId)
+        {
+            orig(self, localUserId);
+
+            AddHooks();
+            LoggerEXT.LogInfo(EOSLoginManager.loggedInUserID.ToString());
         }
     }
 }
