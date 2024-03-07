@@ -5,6 +5,7 @@ using DiscordRichPresence.Utils;
 using DiscordRPC;
 using DiscordRPC.Unity;
 using RoR2;
+using R2API.Utils;
 using UnityEngine.SceneManagement;
 
 // Thanks to WhelanB (to which this repository originates from)
@@ -13,6 +14,8 @@ using UnityEngine.SceneManagement;
 namespace DiscordRichPresence
 {
     [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.1")]
+
+    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
 
     [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
 
@@ -78,7 +81,7 @@ namespace DiscordRichPresence
             SteamworksLobbyHooks.AddHooks();
             RoR2Hooks.AddHooks();
 
-            On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
+            //On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
             Stage.onServerStageBegin += Stage_onServerStageBegin;
         }
@@ -95,7 +98,7 @@ namespace DiscordRichPresence
                 EOSLobbyHooks.RemoveHooks();
             }
 
-            On.RoR2.EOSLoginManager.CompleteConnectLogin -= EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
+            //On.RoR2.EOSLoginManager.CompleteConnectLogin -= EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
             SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
             Stage.onServerStageBegin -= Stage_onServerStageBegin;
 
@@ -162,8 +165,8 @@ namespace DiscordRichPresence
 
             if (CurrentScene != null && Run.instance != null) // Test: Stage 1 --> 2 on 2 player MP
             {
-                LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Value: " + obj.sceneDef.stageOrder);
-                LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Run Instance Value: " + (Run.instance.stageClearCount + 1));
+                //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Value: " + obj.sceneDef.stageOrder);
+                //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Run Instance Value: " + (Run.instance.stageClearCount + 1));
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
         }

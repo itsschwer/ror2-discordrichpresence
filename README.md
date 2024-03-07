@@ -10,7 +10,7 @@ A plethora of options are provided to fine-tune the presence settings, such as w
 
 **Mod creators**: if you would like to add your map or character's image to the presence, contact me at the user found below.
 
-If you experience any issues or have any suggestions, please contact me! I can be found on the RoR2 Modding Discord server, at Cuno#9958.
+If you experience any issues or have any suggestions, please contact me! I can be found on the RoR2 Modding Discord server, as `mikhailmcraft`.
 
 ## Images
 Selecting a character
@@ -32,10 +32,11 @@ Invitation via Discord
 ## Changelog
 
 1.2.1
-- Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons 
+- Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons
 - Fix lunar detonation presence
 - Add outro (credits) presence
 - Fixed an issue where multiplayer would be broken if the user was using EOS
+  - This mod's EOS support is still in testing, please let me know if you encounter any game- or mod-breaking issues
   - If you still encounter issues with multiplayer, please make sure you are signed into your Epic Games account if you have enabled crossplay -- this is not a mod issue!
 - Fixed an issue where multiplayer clients would have their stage number behind by one
 - Fixed an issue where Steam lobbies would update presence incorrectly after a user joins
