@@ -42,9 +42,9 @@ namespace DiscordRichPresence.Hooks
             }
         }
 
-        private static void EOSLobbyManager_OnLobbyCreated(On.RoR2.EOSLobbyManager.orig_OnLobbyCreated orig, EOSLobbyManager self, CreateLobbyCallbackInfo data)
+        private static void EOSLobbyManager_OnLobbyCreated(On.RoR2.EOSLobbyManager.orig_OnLobbyCreated orig, EOSLobbyManager self, ref CreateLobbyCallbackInfo data)
         {
-            orig(self, data);
+            orig(self, ref data);
 
             if (data.ResultCode != Result.Success || self == null)
             {
@@ -56,9 +56,9 @@ namespace DiscordRichPresence.Hooks
             PresenceUtils.SetLobbyPresence(Client, RichPresence, self);
         }
 
-        private static void EOSLobbyManager_OnLobbyJoined(On.RoR2.EOSLobbyManager.orig_OnLobbyJoined orig, EOSLobbyManager self, JoinLobbyCallbackInfo data)
+        private static void EOSLobbyManager_OnLobbyJoined(On.RoR2.EOSLobbyManager.orig_OnLobbyJoined orig, EOSLobbyManager self, ref JoinLobbyCallbackInfo data)
         {
-            orig(self, data);
+            orig(self, ref data);
 
             if (data.ResultCode != Result.Success || self == null)
             {

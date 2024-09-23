@@ -1,6 +1,7 @@
 ﻿using DiscordRichPresence.Utils;
 using RoR2;
 using System;
+using System.Collections;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
@@ -18,14 +19,14 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
         }
 
-        private static void Stage_Start(On.RoR2.Stage.orig_Start orig, Stage self)
+        private static IEnumerator Stage_Start(On.RoR2.Stage.orig_Start orig, Stage self)
         {
             orig(self);
-
+            
             CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
             if (localBody == null)
             {
-                return;
+                yield return null;
             }
 
             LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
