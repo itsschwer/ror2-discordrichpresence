@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
 
 namespace DiscordRichPresence
 {
-    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.1")]
+    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.2")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
 
