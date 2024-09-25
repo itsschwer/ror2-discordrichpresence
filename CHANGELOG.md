@@ -1,3 +1,6 @@
+### 1.2.2 ###
+- Updating to work with Seekers of the Storm (thanks to TheBEEGRat for testing)
+
 ### 1.2.1 ###
 - Added Nemesis Enforcer, Nemesis Commando, Chirr, Executioner, An Arbiter, and Red Mist character icons
 - Fix lunar detonation presence

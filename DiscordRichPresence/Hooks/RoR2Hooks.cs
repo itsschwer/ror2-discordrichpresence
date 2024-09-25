@@ -12,21 +12,19 @@ namespace DiscordRichPresence.Hooks
         {
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
             CharacterBody.onBodyDestroyGlobal += CharacterBody_onBodyDestroyGlobal;
-            On.RoR2.Stage.Start += Stage_Start;
+            Stage.onStageStartGlobal += Stage_onStageStartGlobal;
             On.RoR2.TeleporterInteraction.FixedUpdate += TeleporterInteraction_FixedUpdate;
             On.RoR2.EscapeSequenceController.SetCountdownTime += EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
         }
 
-        private static IEnumerator Stage_Start(On.RoR2.Stage.orig_Start orig, Stage self)
+        private static void Stage_onStageStartGlobal(Stage obj)
         {
-            orig(self);
-            
             CharacterBody localBody = LocalUserManager.GetFirstLocalUser()?.cachedMasterController?.master?.GetBody(); // Don't know what exactly throws a null ref here so we'll just go all in on null checks
             if (localBody == null)
             {
-                yield return null;
+                return;
             }
 
             LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
@@ -40,7 +38,7 @@ namespace DiscordRichPresence.Hooks
         {
             CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
             CharacterBody.onBodyDestroyGlobal -= CharacterBody_onBodyDestroyGlobal;
-            On.RoR2.Stage.Start -= Stage_Start;
+            Stage.onStageStartGlobal -= Stage_onStageStartGlobal;
             On.RoR2.TeleporterInteraction.FixedUpdate -= TeleporterInteraction_FixedUpdate;
             On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
