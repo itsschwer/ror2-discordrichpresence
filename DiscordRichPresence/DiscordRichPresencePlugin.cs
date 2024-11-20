@@ -2,6 +2,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using Discord;
+using DiscordRichPresence.Hooks;
 using DiscordRichPresence.Utils;
 //using DiscordRPC.Unity;
 using RoR2;
@@ -28,7 +29,7 @@ namespace DiscordRichPresence
 
         public static Discord.Discord Client { get; set; }
 
-        //public static RichPresence RichPresence { get; set; }
+        public static Discord.Activity RichPresence { get; set; }
 
         public static DiscordRichPresencePlugin Instance { get; private set; }
 
@@ -109,27 +110,27 @@ namespace DiscordRichPresence
             LoggerEXT.LogInfo("Update Activity");
         }*/
         
-        Discord.Discord discord;
+        //Discord.Discord discord;
         private void Start()
         {
-            discord = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
             ChangeActivity();
         }
 
         private void OnDiscordDisable()
         {
-            discord.Dispose();
+            Client.Dispose();
         }
 
         public void ChangeActivity()
         {
-            var activityManager = discord.GetActivityManager();
-            var activity = new Discord.Activity
+            var activityManager = Client.GetActivityManager();
+            RichPresence = new Discord.Activity
             {
                 State = "Starting game...",
                 Details = "im gonna cry if this doesnt work "
             };
-            activityManager.UpdateActivity(activity, (result =>
+            activityManager.UpdateActivity(RichPresence, (result =>
             {
                 LoggerEXT.LogInfo("activity updated, " + result);
             }));
@@ -137,9 +138,9 @@ namespace DiscordRichPresence
 
         private void Update()
         {
-            if (discord != null)
+            if (Client != null)
             {
-                discord.RunCallbacks();
+                Client.RunCallbacks();
             }
             else
             {
@@ -155,19 +156,20 @@ namespace DiscordRichPresence
             LoggerEXT = Logger;
             Logger.LogInfo("Starting Discord Rich Presence...");
             
-            discord = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
             ChangeActivity();
             
-            var activityManager = discord.GetActivityManager();
-            var activity = new Discord.Activity
+            var activityManager = Client.GetActivityManager();
+            Client.GetActivityManager();
+            RichPresence = new Activity
             {
                 State = "Starting game...",
-                Details = "im gonna cry if this doesnt work ",
-                Assets = new Assets(),
-                Secrets = new Secrets(),
-                Timestamps = new Timestamps()
+                //Details = "im gonna cry if this doesnt work ",
+                Assets = new ActivityAssets(),
+                Secrets = new ActivitySecrets(),
+                Timestamps = new ActivityTimestamps()
             };
-            activityManager.UpdateActivity(activity, (result =>
+            activityManager.UpdateActivity(RichPresence, (result =>
             {
                 LoggerEXT.LogInfo("activity updated, " + result);
             }));
@@ -190,7 +192,7 @@ namespace DiscordRichPresence
 
         private static void InitializeHooks()
         {
-            DiscordClientHooks.AddHooks(Client);
+            //DiscordClientHooks.AddHooks(discord);
             PauseManagerHooks.AddHooks();
             SteamworksLobbyHooks.AddHooks();
             RoR2Hooks.AddHooks();
@@ -202,7 +204,7 @@ namespace DiscordRichPresence
 
         public static void Dispose()
         {
-            DiscordClientHooks.RemoveHooks(Client);
+            //DiscordClientHooks.RemoveHooks(discord);
             PauseManagerHooks.RemoveHooks();
             SteamworksLobbyHooks.RemoveHooks();
             RoR2Hooks.RemoveHooks();
@@ -221,12 +223,12 @@ namespace DiscordRichPresence
 
         public void OnEnable()
         {
-            //InitializeHooks();
+            InitializeHooks();
         }
 
         public void OnDisable()
         {
-            //Dispose();
+            Dispose();
         }
 
         private static void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
@@ -242,7 +244,7 @@ namespace DiscordRichPresence
 
             EOSLobbyManager lobbyManager = EOSLobbyManager.GetFromPlatformSystems();
 
-            /*if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+            if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
             }
@@ -270,7 +272,7 @@ namespace DiscordRichPresence
             {
                 LoggerEXT.LogInfo("Scene Manager Active Scene Changed Called With Value: " + (Run.instance.stageClearCount + 1));
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
-            }*/
+            }
         }
 
         private static void Stage_onServerStageBegin(Stage obj)
@@ -284,7 +286,7 @@ namespace DiscordRichPresence
                 
                 
                 
-                //new ocmment PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+                PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
         }
     }

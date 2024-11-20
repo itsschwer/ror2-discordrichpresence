@@ -1,8 +1,9 @@
-﻿/*using DiscordRPC;
-using DiscordRPC.Message;
+﻿/*using Discord;
 using RoR2;
 using System.Collections.Generic;
 using DiscordRichPresence.Utils;
+using UnityEngine;
+using UnityEngine.Networking.NetworkSystem;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 using static DiscordRichPresence.Utils.InfoTextUtils;
 
@@ -10,19 +11,20 @@ namespace DiscordRichPresence.Hooks
 {
     public static class DiscordClientHooks
     {
-        public static void AddHooks(DiscordRpcClient client)
+        public static void AddHooks(Discord.Discord client)
         {
             // Subscribe to join events
-            client.Subscribe(EventType.Join);
-            client.Subscribe(EventType.JoinRequest);
-
-            client.OnReady += Client_OnReady;
-            client.OnError += Client_OnError;
-            client.OnJoinRequested += Client_OnJoinRequested;
-            client.OnJoin += Client_OnJoin;
+            client.GetLobbyManager()
+            // client.Subscribe(EventType.Join);
+            // client.Subscribe(EventType.JoinRequest);
+            //
+            // client.OnReady += Client_OnReady;
+            // client.OnError += Client_OnError;
+            // client.OnJoinRequested += Client_OnJoinRequested;
+            // client.OnJoin += Client_OnJoin;
         }
 
-        public static void RemoveHooks(DiscordRpcClient client)
+        public static void RemoveHooks(Discord.Discord client)
         {
             client.Unsubscribe(EventType.Join);
             client.Unsubscribe(EventType.JoinRequest);
@@ -101,7 +103,7 @@ namespace DiscordRichPresence.Hooks
 			else
             {
 				EOSLobbyManager.GetFromPlatformSystems().JoinLobby();
-            }#1#
+            }#2#
         }
     }
-}*/
+}#1#*/

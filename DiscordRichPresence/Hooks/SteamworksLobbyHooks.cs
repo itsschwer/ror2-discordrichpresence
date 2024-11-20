@@ -1,4 +1,4 @@
-﻿/*using RoR2;
+﻿using RoR2;
 using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
@@ -79,7 +79,7 @@ namespace DiscordRichPresence.Hooks
         {
             orig(self);
 
-            if (Client == null || !Client.IsInitialized)
+            if (Client == null) //|| !Client.IsInitialized)
             {
                 return;
             }
@@ -87,4 +87,4 @@ namespace DiscordRichPresence.Hooks
             PresenceUtils.SetMainMenuPresence(Client, RichPresence);
         }
     }
-}*/
+}

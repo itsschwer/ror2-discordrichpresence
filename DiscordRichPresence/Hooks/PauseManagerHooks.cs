@@ -1,4 +1,4 @@
-﻿/*using RoR2;
+﻿using RoR2;
 using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
@@ -35,4 +35,4 @@ namespace DiscordRichPresence.Hooks
             }
         }
     }
-}*/
+}

@@ -1,4 +1,4 @@
-﻿/*using DiscordRPC;
+﻿using Discord;
 using RoR2;
 using System;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
@@ -7,7 +7,7 @@ namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-        public static void SetStagePresence(DiscordRpcClient client, RichPresence richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
+        public static void SetStagePresence(Discord.Discord client, Discord.Activity richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
         {
             if (Run.instance == null)
             {
@@ -18,8 +18,8 @@ namespace DiscordRichPresence.Utils
                 LoggerEXT.LogError("Scene is null. Check for its null status before passing it as a parameter. Stack trace follows:");
             }
 
-            richPresence.Assets.LargeImageKey = scene.baseSceneName;
-            richPresence.Assets.LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
+            richPresence.Assets.LargeImage = scene.baseSceneName;
+            richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
 
             richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
             if (run is InfiniteTowerRun infRun && infRun.waveIndex > 0)
@@ -28,13 +28,13 @@ namespace DiscordRichPresence.Utils
             }
 
             string currentDifficultyString = Language.GetString(DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty).nameToken);
-            richPresence.Timestamps = new Timestamps(); // Clear timestamps
-            richPresence.Secrets = new Secrets(); // Clear lobby join
+            richPresence.Timestamps = new ActivityTimestamps(); // Clear timestamps
+            richPresence.Secrets = new ActivitySecrets(); // Clear lobby join
 
             if (scene.baseSceneName == "outro")
             {
                 MoonCountdownTimer = 0;
-                richPresence.Assets.LargeImageKey = "moon2";
+                richPresence.Assets.LargeImage = "moon2";
                 richPresence.Details = "Credits";
                 richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));
             }
@@ -43,7 +43,7 @@ namespace DiscordRichPresence.Utils
                 richPresence.Details = "Escaping! | " + currentDifficultyString;
                 if (!isPaused)
                 {
-                    richPresence.Timestamps.EndUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() + (ulong)MoonCountdownTimer;
+                    richPresence.Timestamps.End = (long)DateTimeOffset.Now.ToUnixTimeSeconds() + (long)MoonCountdownTimer;
                 }
             }
             else
@@ -60,20 +60,24 @@ namespace DiscordRichPresence.Utils
 
                 if (scene.sceneType == SceneType.Stage && !isPaused)
                 {
-                    richPresence.Timestamps.StartUnixMilliseconds = (ulong)DateTimeOffset.Now.ToUnixTimeSeconds() - (ulong)run.GetRunStopwatch();
+                    richPresence.Timestamps.Start = (long)DateTimeOffset.Now.ToUnixTimeSeconds() - (long)run.GetRunStopwatch();
                 }
             }
 
             DiscordRichPresencePlugin.RichPresence = richPresence;
-            client.SetPresence(richPresence);
+            var activityManager = client.ActivityManagerInstance;
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
         }
 
-        public static void SetMainMenuPresence(DiscordRpcClient client, RichPresence richPresence, string details = "")
+        public static void SetMainMenuPresence(Discord.Discord client, Discord.Activity richPresence, string details = "")
         {
-            richPresence.Assets = new Assets
+            richPresence.Assets = new ActivityAssets()
             {
-                LargeImageKey = "riskofrain2",
-                LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
+                LargeImage = "riskofrain2",
+                LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
             };
 
             richPresence.Details = PluginConfig.MainMenuIdleMessageEntry.Value;
@@ -82,17 +86,21 @@ namespace DiscordRichPresence.Utils
                 richPresence.Details = details;
             }
 
-            richPresence.Timestamps = new Timestamps(); // Clear timestamps
+            richPresence.Timestamps = new ActivityTimestamps(); // Clear timestamps
 
             richPresence.State = "In Menu";
-            richPresence.Secrets = new Secrets();
-            richPresence.Party = new Party(); // Clear secrets and party
+            richPresence.Secrets = new ActivitySecrets();
+            richPresence.Party = new ActivityParty(); // Clear secrets and party
 
             DiscordRichPresencePlugin.RichPresence = richPresence;
-            client.SetPresence(richPresence);
+            var activityManager = client.ActivityManagerInstance;
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
         }
 
-        public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, Facepunch.Steamworks.Client faceClient, bool justParty = false, string details = "")
+        public static void SetLobbyPresence(Discord.Discord client, Discord.Activity richPresence, Facepunch.Steamworks.Client faceClient, bool justParty = false, string details = "")
         {
             if (justParty)
             {
@@ -105,21 +113,25 @@ namespace DiscordRichPresence.Utils
                 richPresence.Details = details;
             }
 
-            richPresence.Assets = new Assets
+            richPresence.Assets = new ActivityAssets()
             {
-                LargeImageKey = "riskofrain2",
-                LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
+                LargeImage = "riskofrain2",
+                LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
             };
-            richPresence.Timestamps = new Timestamps(); // Clear timestamps
+            richPresence.Timestamps = new ActivityTimestamps(); // Clear timestamps
 
             Party:
             richPresence = UpdateParty(richPresence, faceClient);
 
             DiscordRichPresencePlugin.RichPresence = richPresence;
-            client.SetPresence(richPresence);
+            var activityManager = client.ActivityManagerInstance;
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
         }
 
-        public static void SetLobbyPresence(DiscordRpcClient client, RichPresence richPresence, EOSLobbyManager lobbyManager, bool justParty = false, string details = "")
+        public static void SetLobbyPresence(Discord.Discord client, Discord.Activity richPresence, EOSLobbyManager lobbyManager, bool justParty = false, string details = "")
         {
             if (justParty)
             {
@@ -132,48 +144,52 @@ namespace DiscordRichPresence.Utils
                 richPresence.Details = details;
             }
 
-            richPresence.Assets = new Assets
+            richPresence.Assets = new ActivityAssets()
             {
-                LargeImageKey = "riskofrain2",
-                LargeImageText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
+                LargeImage = "riskofrain2",
+                LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version
             };
-            richPresence.Timestamps = new Timestamps(); // Clear timestamps
+            richPresence.Timestamps = new ActivityTimestamps(); // Clear timestamps
 
             Party:
             richPresence = UpdateParty(richPresence, lobbyManager);
 
             DiscordRichPresencePlugin.RichPresence = richPresence;
-            client.SetPresence(richPresence);
+            var activityManager = client.ActivityManagerInstance;
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
         }
 
-        public static RichPresence UpdateParty(RichPresence richPresence, Facepunch.Steamworks.Client faceClient, bool includeJoinButton = true)
+        public static Discord.Activity UpdateParty(Discord.Activity richPresence, Facepunch.Steamworks.Client faceClient, bool includeJoinButton = true)
         {
-            richPresence.Party.ID = faceClient.Username;
-            richPresence.Party.Max = faceClient.Lobby.MaxMembers;
-            richPresence.Party.Size = faceClient.Lobby.NumMembers;
+            richPresence.Party.Id = faceClient.Username;
+            richPresence.Party.Size.CurrentSize = faceClient.Lobby.MaxMembers;
+            richPresence.Party.Size.MaxSize = faceClient.Lobby.NumMembers;
 
-            richPresence.Secrets = new Secrets();
+            richPresence.Secrets = new ActivitySecrets();
             if (PluginConfig.AllowJoiningEntry.Value && includeJoinButton)
             {
-                richPresence.Secrets.JoinSecret = faceClient.Lobby.CurrentLobby.ToString();
+                richPresence.Secrets.Join = faceClient.Lobby.CurrentLobby.ToString();
             }
 
             return richPresence;
         }
 
-        public static RichPresence UpdateParty(RichPresence richPresence, EOSLobbyManager lobbyManager, bool includeJoinButton = true)
+        public static Discord.Activity UpdateParty(Discord.Activity richPresence, EOSLobbyManager lobbyManager, bool includeJoinButton = true)
         {
-            richPresence.Party.ID = lobbyManager.CurrentLobbyId;
-            richPresence.Party.Max = lobbyManager.newestLobbyData.totalMaxPlayers;
-            richPresence.Party.Size = lobbyManager.newestLobbyData.totalPlayerCount; // GetLobbyMembers().Length
+            richPresence.Party.Id = lobbyManager.CurrentLobbyId;
+            richPresence.Party.Size.CurrentSize = lobbyManager.newestLobbyData.totalMaxPlayers;
+            richPresence.Party.Size.MaxSize = lobbyManager.newestLobbyData.totalPlayerCount;
 
-            richPresence.Secrets = new Secrets();
+            richPresence.Secrets = new ActivitySecrets();
             if (PluginConfig.AllowJoiningEntry.Value && includeJoinButton)
             {
-                richPresence.Secrets.JoinSecret = lobbyManager.GetLobbyMembers()[0].ToString();
+                richPresence.Secrets.Join = lobbyManager.GetLobbyMembers()[0].ToString();
             }
 
             return richPresence;
         }
     }
-}*/
+}

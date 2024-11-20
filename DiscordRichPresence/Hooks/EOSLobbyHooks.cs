@@ -1,4 +1,4 @@
-﻿/*using Epic.OnlineServices;
+﻿using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using RoR2;
 using System;
@@ -96,7 +96,7 @@ namespace DiscordRichPresence.Hooks
         {
             orig(self);
 
-            if (Client == null || !Client.IsInitialized)
+            if (Client == null) //|| !Client.IsInitialized)
             {
                 return;
             }
@@ -113,4 +113,4 @@ namespace DiscordRichPresence.Hooks
             LoggerEXT.LogInfo(EOSLoginManager.loggedInUserID.ToString());
         }
     }
-}*/
+}

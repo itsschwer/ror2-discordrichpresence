@@ -1,4 +1,4 @@
-﻿/*using RoR2;
+﻿using RoR2;
 using System;
 using System.Collections;
 using DiscordRichPresence.Utils;
@@ -28,10 +28,16 @@ namespace DiscordRichPresence.Hooks
             }
 
             LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
-            RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
-            RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
-            Client.SetPresence(RichPresence);
-            PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+
+            var richPresence = RichPresence;
+            richPresence.Assets.SmallImage = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
+            richPresence.Assets.SmallText = localBody.GetDisplayName();
+            var activityManager = Client.GetActivityManager();
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            PresenceUtils.SetStagePresence(Client, richPresence, CurrentScene, Run.instance);
         }
 
         public static void RemoveHooks()
@@ -110,4 +116,4 @@ namespace DiscordRichPresence.Hooks
             orig(self, mainMenuController);
         }
     }
-}*/
+}
