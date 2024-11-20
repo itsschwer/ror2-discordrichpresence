@@ -1,7 +1,7 @@
-﻿using DiscordRichPresence.Utils;
-using RoR2;
+﻿/*using RoR2;
 using System;
 using System.Collections;
+using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
@@ -110,4 +110,4 @@ namespace DiscordRichPresence.Hooks
             orig(self, mainMenuController);
         }
     }
-}
+}*/

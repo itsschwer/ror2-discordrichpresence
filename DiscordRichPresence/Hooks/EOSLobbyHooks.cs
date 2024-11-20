@@ -1,8 +1,8 @@
-﻿using DiscordRichPresence.Utils;
-using Epic.OnlineServices;
+﻿/*using Epic.OnlineServices;
 using Epic.OnlineServices.Lobby;
 using RoR2;
 using System;
+using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
@@ -113,4 +113,4 @@ namespace DiscordRichPresence.Hooks
             LoggerEXT.LogInfo(EOSLoginManager.loggedInUserID.ToString());
         }
     }
-}
+}*/

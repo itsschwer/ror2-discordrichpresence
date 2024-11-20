@@ -1,4 +1,4 @@
-﻿using DiscordRPC;
+﻿/*using DiscordRPC;
 using RoR2;
 using System;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
@@ -176,4 +176,4 @@ namespace DiscordRichPresence.Utils
             return richPresence;
         }
     }
-}
+}*/

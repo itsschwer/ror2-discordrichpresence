@@ -1,7 +1,8 @@
-﻿using DiscordRPC;
+﻿/*using DiscordRPC;
 using DiscordRPC.Message;
 using RoR2;
 using System.Collections.Generic;
+using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 using static DiscordRichPresence.Utils.InfoTextUtils;
 
@@ -63,7 +64,7 @@ namespace DiscordRichPresence.Hooks
         private static void Client_OnJoinRequested(object sender, JoinRequestMessage args)
         {
             LoggerEXT.LogInfo(string.Format("User {0} asked to join lobby", args.User.Username));
-            Chat.AddMessage(string.Format("Discord user {0} has asked to join your game!", FormatTextStyleTag(args.User.Username, StyleTag.Event)));
+            Chat.AddMessage(string.Format("Discord user {0} has asked to join your game!", FormatTextStyleTag(args.User.Username, InfoTextUtils.StyleTag.Event)));
             // Always let people into your game for now
             DiscordRpcClient senderClient = (DiscordRpcClient)sender;
             senderClient.Respond(args, true);
@@ -100,7 +101,7 @@ namespace DiscordRichPresence.Hooks
 			else
             {
 				EOSLobbyManager.GetFromPlatformSystems().JoinLobby();
-            }*/
+            }#1#
         }
     }
-}
+}*/

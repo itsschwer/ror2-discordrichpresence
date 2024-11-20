@@ -1,12 +1,15 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Logging;
-using DiscordRichPresence.Hooks;
+using Discord;
 using DiscordRichPresence.Utils;
-using DiscordRPC;
-using DiscordRPC.Unity;
+//using DiscordRPC.Unity;
 using RoR2;
 using R2API.Utils;
+//using DiscordRichPresence.Hooks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using Console = System.Console;
 
 // Thanks to WhelanB (to which this repository originates from)
 // and DarkKronicle (whose repository this is forked from)
@@ -23,9 +26,9 @@ namespace DiscordRichPresence
     {
         internal static ManualLogSource LoggerEXT { get; private set; }
 
-        public static DiscordRpcClient Client { get; set; }
+        public static Discord.Discord Client { get; set; }
 
-        public static RichPresence RichPresence { get; set; }
+        //public static RichPresence RichPresence { get; set; }
 
         public static DiscordRichPresencePlugin Instance { get; private set; }
 
@@ -38,29 +41,140 @@ namespace DiscordRichPresence
         public static string CurrentBoss { get; set; }
 
         public static bool IsInEOSLobby => EOSLobbyManager.GetFromPlatformSystems() != null && EOSLobbyManager.GetFromPlatformSystems().isInLobby;
+        
+        /*static void UpdateActivity(Discord.Discord discord)
+        {
+            var activityManager = discord.GetActivityManager();
+            var lobbyManager = discord.GetLobbyManager();
+
+            var activity = new Discord.Activity
+            {
+                State = "olleh",
+                Details = "foo details",
+                Timestamps =
+                {
+                    Start = 5,
+                    End = 6,
+                },
+                Assets =
+                {
+                    LargeImage = "foo largeImageKey",
+                    LargeText = "foo largeImageText",
+                    SmallImage = "foo smallImageKey",
+                    SmallText = "foo smallImageText",
+                },
+                Instance = true,
+            };
+
+            activityManager.UpdateActivity(activity, result =>
+            {
+                LoggerEXT.LogInfo("Update Activity {0}" + result);
+
+                // Send an invite to another user for this activity.
+                // Receiver should see an invite in their DM.
+                // Use a relationship user's ID for this.
+                // activityManager
+                //   .SendInvite(
+                //       364843917537050624,
+                //       Discord.ActivityActionType.Join,
+                //       "",
+                //       inviteResult =>
+                //       {
+                //           Console.WriteLine("Invite {0}", inviteResult);
+                //       }
+                //   );
+            });
+        }
+
+        public void FixedUpdate()
+        {
+            var applicationManager = Client.GetApplicationManager();
+            var activityManager = Client.GetActivityManager();
+            var lobbyManager = Client.GetLobbyManager();
+            var imageManager = Client.GetImageManager();
+
+            var userManager = Client.GetUserManager();
+            
+            // The auth manager fires events as information about the current user changes.
+            // This event will fire once on init.
+            //
+            // GetCurrentUser will error until this fires once.
+            userManager.OnCurrentUserUpdate += () =>
+            {
+                var currentUser = userManager.GetCurrentUser();
+                LoggerEXT.LogInfo(currentUser.Username);
+                LoggerEXT.LogInfo(currentUser.Id);
+            };
+            UpdateActivity(Client);
+            LoggerEXT.LogInfo("Update Activity");
+        }*/
+        
+        Discord.Discord discord;
+        private void Start()
+        {
+            discord = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            ChangeActivity();
+        }
+
+        private void OnDiscordDisable()
+        {
+            discord.Dispose();
+        }
+
+        public void ChangeActivity()
+        {
+            var activityManager = discord.GetActivityManager();
+            var activity = new Discord.Activity
+            {
+                State = "Starting game...",
+                Details = "im gonna cry if this doesnt work "
+            };
+            activityManager.UpdateActivity(activity, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+        }
+
+        private void Update()
+        {
+            if (discord != null)
+            {
+                discord.RunCallbacks();
+            }
+            else
+            {
+                LoggerEXT.LogInfo("discord is null");
+            }
+            
+        }
+        
 
         public void Awake()
         {
             Instance = this;
             LoggerEXT = Logger;
             Logger.LogInfo("Starting Discord Rich Presence...");
-
-            UnityNamedPipe pipe = new UnityNamedPipe();
-            Client = new DiscordRpcClient("992086428240580720", client: pipe);
-            Client.RegisterUriScheme("632360");
-
-            RichPresence = new RichPresence()
+            
+            discord = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            ChangeActivity();
+            
+            var activityManager = discord.GetActivityManager();
+            var activity = new Discord.Activity
             {
                 State = "Starting game...",
+                Details = "im gonna cry if this doesnt work ",
                 Assets = new Assets(),
                 Secrets = new Secrets(),
                 Timestamps = new Timestamps()
             };
-
-            Client.SetPresence(RichPresence);
-
-            Client.Initialize();
-
+            activityManager.UpdateActivity(activity, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            
+            Logger.LogInfo("Discord Rich Presence has started...");
+            
+            
             PluginConfig.AllowJoiningEntry = Config.Bind("Options", "Allow Joining", true, "Controls whether or not other users should be allowed to ask to join your game.");
             PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", PluginConfig.TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
             PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "Main Menu Idle Message", "", "Allows you to choose a message to be displayed when idling in the main menu.");
@@ -81,7 +195,7 @@ namespace DiscordRichPresence
             SteamworksLobbyHooks.AddHooks();
             RoR2Hooks.AddHooks();
 
-            //On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
+            // old commenty On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
             Stage.onServerStageBegin += Stage_onServerStageBegin;
         }
@@ -107,17 +221,17 @@ namespace DiscordRichPresence
 
         public void OnEnable()
         {
-            InitializeHooks();
+            //InitializeHooks();
         }
 
         public void OnDisable()
         {
-            Dispose();
+            //Dispose();
         }
 
         private static void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
         {
-            if (Client == null || !Client.IsInitialized)
+            if (Client == null)
             {
                 return;
             }
@@ -128,7 +242,7 @@ namespace DiscordRichPresence
 
             EOSLobbyManager lobbyManager = EOSLobbyManager.GetFromPlatformSystems();
 
-            if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+            /*if (arg1.name == "title" && Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
             {
                 PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
             }
@@ -156,7 +270,7 @@ namespace DiscordRichPresence
             {
                 LoggerEXT.LogInfo("Scene Manager Active Scene Changed Called With Value: " + (Run.instance.stageClearCount + 1));
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
-            }
+            }*/
         }
 
         private static void Stage_onServerStageBegin(Stage obj)
@@ -167,7 +281,10 @@ namespace DiscordRichPresence
             {
                 //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Value: " + obj.sceneDef.stageOrder);
                 //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Run Instance Value: " + (Run.instance.stageClearCount + 1));
-                PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+                
+                
+                
+                //new ocmment PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
         }
     }

@@ -17,6 +17,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="DiscordGameSDKWrapper.UnityEngine" Version="3.2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RiskOfRain2.GameLibs" Version="1.2.4-r.0" />
 	<PackageReference Include="R2API.Networking" Version="1.0.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2019.4.26" />
@@ -28,9 +30,6 @@
   <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>libs\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="DiscordRPC">
-      <HintPath>libs\DiscordRPC.dll</HintPath>
     </Reference>
     <Reference Include="EOS">
       <HintPath>libs\EOS.dll</HintPath>
