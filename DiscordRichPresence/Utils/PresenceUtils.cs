@@ -17,7 +17,9 @@ namespace DiscordRichPresence.Utils
             {
                 LoggerEXT.LogError("Scene is null. Check for its null status before passing it as a parameter. Stack trace follows:");
             }
-
+            
+            LoggerEXT.LogInfo("baseSceneName: " + scene.baseSceneName); // uhhh yeah 
+            
             richPresence.Assets.LargeImage = scene.baseSceneName;
             richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
 

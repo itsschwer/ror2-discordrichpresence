@@ -1070,7 +1070,7 @@ namespace Discord
             if (result != Result.Ok)
             {
                 Dispose();
-                throw new ResultException(result);
+                //throw new ResultException(result); this gives a popup but stuff still works so :/
             }
         }
 

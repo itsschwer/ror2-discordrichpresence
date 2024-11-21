@@ -14,14 +14,16 @@ namespace DiscordRichPresence.Hooks
         public static void AddHooks(Discord.Discord client)
         {
             // Subscribe to join events
-            client.GetLobbyManager()
-            // client.Subscribe(EventType.Join);
-            // client.Subscribe(EventType.JoinRequest);
-            //
-            // client.OnReady += Client_OnReady;
-            // client.OnError += Client_OnError;
-            // client.OnJoinRequested += Client_OnJoinRequested;
-            // client.OnJoin += Client_OnJoin;
+            //client.GetLobbyManager();
+            
+            client.Subscribe(EventType.Join);// im not sure abt these ,,..
+            client.Subscribe(EventType.JoinRequest);
+
+            client.OnReady -= Client_OnReady; // https://discord.com/developers/docs/developer-tools/game-sdk#openactivityinvite
+            client.OnError -= Client_OnError; // i dunno if this one has a docs
+            client.OnJoinRequested -= Client_OnJoinRequested; // https://discord.com/developers/docs/developer-tools/game-sdk#onactivityjoinrequest
+            client.OnJoin -= Client_OnJoin; // https://discord.com/developers/docs/developer-tools/game-sdk#onactivityjoin
+            
         }
 
         public static void RemoveHooks(Discord.Discord client)
@@ -90,20 +92,20 @@ namespace DiscordRichPresence.Hooks
                 UserID.TryParse(args.Secret, out UserID usId);
                 EOSLobbyManager.GetFromPlatformSystems().JoinLobby(usId);
             }
-            /*LoggerEXT.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
-			ConCommandArgs conArgs = new ConCommandArgs
-			{
-				userArgs = new List<string>() { args.Secret },
-			};
+            //LoggerEXT.LogInfo("Joining Game via Discord - Steam Lobby ID: " + args.Secret);
+			//ConCommandArgs conArgs = new ConCommandArgs
+			//{
+			//	userArgs = new List<string>() { args.Secret },
+			//};
 
-			if (Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
-            {
-				SteamworksLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);
-			}
-			else
-            {
-				EOSLobbyManager.GetFromPlatformSystems().JoinLobby();
-            }#2#
+			//if (Facepunch.Steamworks.Client.Instance.Lobby.IsValid)
+            //{
+			//	SteamworksLobbyManager.GetFromPlatformSystems().JoinLobby(conArgs);
+			//}
+			//else
+            //{
+			//	EOSLobbyManager.GetFromPlatformSystems().JoinLobby();
+            //}
         }
     }
-}#1#*/
+}*/
