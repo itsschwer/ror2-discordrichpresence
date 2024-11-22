@@ -30,8 +30,6 @@ namespace DiscordRichPresence.Hooks
             LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
 
             var richPresence = RichPresence;
-            // https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/Characters/acrid.png
-            // in theory, richPresence.Assets.SmallImage = "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" + localBody.GetDisplayName() + ".png" should wokr !! 
             richPresence.Assets.SmallImage = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
             richPresence.Assets.SmallText = localBody.GetDisplayName();
             var activityManager = Client.GetActivityManager();

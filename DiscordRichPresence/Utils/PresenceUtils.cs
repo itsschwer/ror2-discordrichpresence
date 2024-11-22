@@ -19,7 +19,7 @@ namespace DiscordRichPresence.Utils
             }
             
             LoggerEXT.LogInfo("baseSceneName: " + scene.baseSceneName); // uhhh yeah 
-            
+
             richPresence.Assets.LargeImage = scene.baseSceneName;
             richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
 

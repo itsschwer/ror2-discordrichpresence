@@ -12,7 +12,7 @@ namespace DiscordRichPresence.Hooks
         public static void AddHooks()
         {
             On.RoR2.SteamworksLobbyManager.OnLobbyCreated += SteamworksLobbyManager_OnLobbyCreated;
-            //On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined; for some reason this hook just doesnt work anymore ??? the code uses onlobbychanged at the end so it shouldnt lead to any serious isses but still weird :soycat:
+            //On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined;
             On.RoR2.SteamworksLobbyManager.OnLobbyChanged += SteamworksLobbyManager_OnLobbyChanged;
             On.RoR2.SteamworksLobbyManager.LeaveLobby += SteamworksLobbyManager_LeaveLobby;
         }
@@ -38,7 +38,7 @@ namespace DiscordRichPresence.Hooks
 
             PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
         }
-        
+
         /*
         private static void SteamworksLobbyManager_OnLobbyJoined(On.RoR2.SteamworksLobbyManager.orig_OnLobbyJoined orig, SteamworksLobbyManager self, bool success)
         {
@@ -54,7 +54,7 @@ namespace DiscordRichPresence.Hooks
             PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
         }
         */
-
+        
         private static void SteamworksLobbyManager_OnLobbyChanged(On.RoR2.SteamworksLobbyManager.orig_OnLobbyChanged orig, SteamworksLobbyManager self)
         {
             orig(self);
