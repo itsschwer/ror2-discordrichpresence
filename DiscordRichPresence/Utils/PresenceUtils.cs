@@ -19,8 +19,46 @@ namespace DiscordRichPresence.Utils
             }
             
             LoggerEXT.LogInfo("baseSceneName: " + scene.baseSceneName); // uhhh yeah 
+            
+            /*
+             something like this could be used to detect if the stage has a valid image (and survivors too(
+             //https://www.geeksforgeeks.org/how-to-read-data-from-website-using-c-sharp/
+             using (var client = new HttpClient()) 
+               { 
+                   var response = await client.GetAsync("https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/" + scene.baseSceneName + ".png"); 
 
-            richPresence.Assets.LargeImage = "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/" + scene.baseSceneName + ".png";
+                   if (response.IsSuccessStatusCode) 
+                   { 
+                       var xml = await response.Content.ReadAsStringAsync(); 
+  
+                       // We can then use the LINQ to XML API to query the XML 
+                       var doc = XDocument.Parse(xml); 
+  
+                       // Let's query the XML to get all of the <title> elements 
+                       var images = from el in doc.Descendants("image") 
+                                    select el.Value; 
+                       
+                       
+                       // And finally, we'll print out the titles 
+                       foreach (var images in images) 
+                       { 
+                           Console.WriteLine(images); 
+                       } 
+                   } 
+               } 
+             */
+            if (InfoTextUtils.StagesWithAssets.Contains(scene.baseSceneName))
+            {
+                richPresence.Assets.LargeImage =
+                    "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/" +
+                    scene.baseSceneName + ".png";
+            }
+            else
+            {
+                richPresence.Assets.LargeImage =
+                    "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/riskofrain2.png";
+            }
+            
             richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
 
             richPresence.State = string.Format("Stage {0} - {1}", run.stageClearCount + 1, Language.GetString(scene.nameToken));

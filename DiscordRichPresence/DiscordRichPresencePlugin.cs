@@ -43,74 +43,6 @@ namespace DiscordRichPresence
 
         public static bool IsInEOSLobby => EOSLobbyManager.GetFromPlatformSystems() != null && EOSLobbyManager.GetFromPlatformSystems().isInLobby;
         
-        /*static void UpdateActivity(Discord.Discord discord)
-        {
-            var activityManager = discord.GetActivityManager();
-            var lobbyManager = discord.GetLobbyManager();
-
-            var activity = new Discord.Activity
-            {
-                State = "olleh",
-                Details = "foo details",
-                Timestamps =
-                {
-                    Start = 5,
-                    End = 6,
-                },
-                Assets =
-                {
-                    LargeImage = "foo largeImageKey",
-                    LargeText = "foo largeImageText",
-                    SmallImage = "foo smallImageKey",
-                    SmallText = "foo smallImageText",
-                },
-                Instance = true,
-            };
-
-            activityManager.UpdateActivity(activity, result =>
-            {
-                LoggerEXT.LogInfo("Update Activity {0}" + result);
-
-                // Send an invite to another user for this activity.
-                // Receiver should see an invite in their DM.
-                // Use a relationship user's ID for this.
-                // activityManager
-                //   .SendInvite(
-                //       364843917537050624,
-                //       Discord.ActivityActionType.Join,
-                //       "",
-                //       inviteResult =>
-                //       {
-                //           Console.WriteLine("Invite {0}", inviteResult);
-                //       }
-                //   );
-            });
-        }
-
-        public void FixedUpdate()
-        {
-            var applicationManager = Client.GetApplicationManager();
-            var activityManager = Client.GetActivityManager();
-            var lobbyManager = Client.GetLobbyManager();
-            var imageManager = Client.GetImageManager();
-
-            var userManager = Client.GetUserManager();
-            
-            // The auth manager fires events as information about the current user changes.
-            // This event will fire once on init.
-            //
-            // GetCurrentUser will error until this fires once.
-            userManager.OnCurrentUserUpdate += () =>
-            {
-                var currentUser = userManager.GetCurrentUser();
-                LoggerEXT.LogInfo(currentUser.Username);
-                LoggerEXT.LogInfo(currentUser.Id);
-            };
-            UpdateActivity(Client);
-            LoggerEXT.LogInfo("Update Activity");
-        }*/
-        
-        //Discord.Discord discord;
         private void Start()
         {
             Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
@@ -164,7 +96,6 @@ namespace DiscordRichPresence
             RichPresence = new Activity
             {
                 State = "Starting game...",
-                //Details = "im gonna cry if this doesnt work ",
                 Assets = new ActivityAssets(),
                 Secrets = new ActivitySecrets(),
                 Timestamps = new ActivityTimestamps()

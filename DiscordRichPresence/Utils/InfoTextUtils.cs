@@ -47,7 +47,49 @@ namespace DiscordRichPresence.Utils
             "Deputy",
             "Ranger"
         };
-
+        
+        public static List<string> StagesWithAssets = new List<string>()
+        {
+            "ancientloft",
+            "arena",
+            "artifactworld",
+            "bazaar",
+            "blackbeach",
+            "blackbeach2",
+            "dampcavesimple",
+            "drybasin",
+            "foggyswamp",
+            "forgottenhaven",
+            "frozenwall",
+            "goldshores",
+            "golemplains",
+            "goolake",
+            "habitat",
+            "habitatfall",
+            "helminthroost",
+            "itancientloft",
+            "itdampcave",
+            "itfrozenwall",
+            "itgoolake",
+            "lakes",
+            "lakesnight",
+            "lemuriantemple",
+            "limbo",
+            "meridian",
+            "moon2",
+            "mysteryspace",
+            "riskofrain2", // so there was a risk of rain ,., too ,.,,..,
+            "shipgraveyard",
+            "skymeadow",
+            "slumberingsatellite",
+            "snowyforest",
+            "sulfurpods",
+            "village",
+            "villagenight",
+            "voidraid",
+            "voidstage",
+            "wispgraveyard"
+        };
         public enum StyleTag : byte
         {
             Damage = 1,
