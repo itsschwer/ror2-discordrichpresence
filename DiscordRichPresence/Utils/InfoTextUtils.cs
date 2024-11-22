@@ -32,10 +32,20 @@ namespace DiscordRichPresence.Utils
             "Bomber",
             "Nemesis Enforcer",
             "Nemesis Commando",
+            "Nemesis Mercenary",
             "Chirr",
             "Executioner",
             "An Arbiter",
-            "Red Mist"
+            "Red Mist",
+            "Rocket",
+            "Dancer",
+            "Pilot",
+            "Johnny",
+            "Wyatt",
+            "Sonic",
+            "Robomando",
+            "Deputy",
+            "Ranger"
         };
 
         public enum StyleTag : byte
