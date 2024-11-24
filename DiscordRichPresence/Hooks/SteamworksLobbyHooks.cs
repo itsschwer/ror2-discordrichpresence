@@ -12,7 +12,7 @@ namespace DiscordRichPresence.Hooks
         public static void AddHooks()
         {
             On.RoR2.SteamworksLobbyManager.OnLobbyCreated += SteamworksLobbyManager_OnLobbyCreated;
-            //On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined;
+            //On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined; you cant hook onto this anymore; no idea why ! the actual function calls lobbychanged right after so it'll probably be fine :soycat:
             On.RoR2.SteamworksLobbyManager.OnLobbyChanged += SteamworksLobbyManager_OnLobbyChanged;
             On.RoR2.SteamworksLobbyManager.LeaveLobby += SteamworksLobbyManager_LeaveLobby;
         }

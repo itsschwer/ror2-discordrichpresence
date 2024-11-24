@@ -60,7 +60,6 @@ namespace DiscordRichPresence
             RichPresence = new Discord.Activity
             {
                 State = "Starting game...",
-                Details = "im gonna cry if this doesnt work "
             };
             activityManager.UpdateActivity(RichPresence, (result =>
             {
@@ -128,7 +127,7 @@ namespace DiscordRichPresence
             SteamworksLobbyHooks.AddHooks();
             RoR2Hooks.AddHooks();
 
-            // old commenty On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
+            //On.RoR2.EOSLoginManager.CompleteConnectLogin += EOSLobbyHooks.EOSLoginManager_CompleteConnectLogin;
             SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
             Stage.onServerStageBegin += Stage_onServerStageBegin;
         }

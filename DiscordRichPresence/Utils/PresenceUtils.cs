@@ -21,7 +21,7 @@ namespace DiscordRichPresence.Utils
             LoggerEXT.LogInfo("baseSceneName: " + scene.baseSceneName); // uhhh yeah 
             
             /*
-             something like this could be used to detect if the stage has a valid image (and survivors too(
+             something like this could be used to detect if the stage has a valid image without having to update the dll (and survivors too(
              //https://www.geeksforgeeks.org/how-to-read-data-from-website-using-c-sharp/
              using (var client = new HttpClient()) 
                { 
@@ -205,8 +205,8 @@ namespace DiscordRichPresence.Utils
         public static Discord.Activity UpdateParty(Discord.Activity richPresence, Facepunch.Steamworks.Client faceClient, bool includeJoinButton = true)
         {
             richPresence.Party.Id = faceClient.Username;
-            richPresence.Party.Size.CurrentSize = faceClient.Lobby.MaxMembers;
-            richPresence.Party.Size.MaxSize = faceClient.Lobby.NumMembers;
+            richPresence.Party.Size.CurrentSize = faceClient.Lobby.NumMembers;
+            richPresence.Party.Size.MaxSize = faceClient.Lobby.MaxMembers;
 
             richPresence.Secrets = new ActivitySecrets();
             if (PluginConfig.AllowJoiningEntry.Value && includeJoinButton)
