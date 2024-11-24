@@ -1,6 +1,5 @@
-﻿#if !DISABLE_DISCORD
-using DiscordRPC.IO;
-using DiscordRPC.Logging;
+﻿/*#if !DISABLE_DISCORD
+using Discord;
 using Lachee.IO;
 using System;
 using System.IO;
@@ -254,4 +253,4 @@ namespace DiscordRPC.Unity
         }
     }
 }
-#endif
+#endif#1#*/

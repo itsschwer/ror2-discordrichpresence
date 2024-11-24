@@ -1,5 +1,5 @@
-﻿using DiscordRichPresence.Utils;
-using RoR2;
+﻿using RoR2;
+using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
@@ -12,7 +12,7 @@ namespace DiscordRichPresence.Hooks
         public static void AddHooks()
         {
             On.RoR2.SteamworksLobbyManager.OnLobbyCreated += SteamworksLobbyManager_OnLobbyCreated;
-            On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined;
+            //On.RoR2.SteamworksLobbyManager.OnLobbyJoined += SteamworksLobbyManager_OnLobbyJoined; you cant hook onto this anymore; no idea why ! the actual function calls lobbychanged right after so it'll probably be fine :soycat:
             On.RoR2.SteamworksLobbyManager.OnLobbyChanged += SteamworksLobbyManager_OnLobbyChanged;
             On.RoR2.SteamworksLobbyManager.LeaveLobby += SteamworksLobbyManager_LeaveLobby;
         }
@@ -20,7 +20,7 @@ namespace DiscordRichPresence.Hooks
         public static void RemoveHooks()
         {
             On.RoR2.SteamworksLobbyManager.OnLobbyCreated -= SteamworksLobbyManager_OnLobbyCreated;
-            On.RoR2.SteamworksLobbyManager.OnLobbyJoined -= SteamworksLobbyManager_OnLobbyJoined;
+            //On.RoR2.SteamworksLobbyManager.OnLobbyJoined -= SteamworksLobbyManager_OnLobbyJoined;
             On.RoR2.SteamworksLobbyManager.OnLobbyChanged -= SteamworksLobbyManager_OnLobbyChanged;
             On.RoR2.SteamworksLobbyManager.LeaveLobby -= SteamworksLobbyManager_LeaveLobby;
         }
@@ -39,6 +39,7 @@ namespace DiscordRichPresence.Hooks
             PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
         }
 
+        /*
         private static void SteamworksLobbyManager_OnLobbyJoined(On.RoR2.SteamworksLobbyManager.orig_OnLobbyJoined orig, SteamworksLobbyManager self, bool success)
         {
             orig(self, success);
@@ -52,7 +53,8 @@ namespace DiscordRichPresence.Hooks
 
             PresenceUtils.SetLobbyPresence(Client, RichPresence, Facepunch.Steamworks.Client.Instance);
         }
-
+        */
+        
         private static void SteamworksLobbyManager_OnLobbyChanged(On.RoR2.SteamworksLobbyManager.orig_OnLobbyChanged orig, SteamworksLobbyManager self)
         {
             orig(self);
@@ -79,7 +81,7 @@ namespace DiscordRichPresence.Hooks
         {
             orig(self);
 
-            if (Client == null || !Client.IsInitialized)
+            if (Client == null) //|| !Client.IsInitialized)
             {
                 return;
             }

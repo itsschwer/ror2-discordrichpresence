@@ -1,9 +1,9 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Logging;
+using Discord;
 using DiscordRichPresence.Hooks;
 using DiscordRichPresence.Utils;
-using DiscordRPC;
-using DiscordRPC.Unity;
 using RoR2;
 using R2API.Utils;
 using UnityEngine.SceneManagement;
@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
 
 namespace DiscordRichPresence
 {
-    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.2")]
+    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.3")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
 
@@ -23,9 +23,9 @@ namespace DiscordRichPresence
     {
         internal static ManualLogSource LoggerEXT { get; private set; }
 
-        public static DiscordRpcClient Client { get; set; }
+        public static Discord.Discord Client { get; set; }
 
-        public static RichPresence RichPresence { get; set; }
+        public static Discord.Activity RichPresence { get; set; }
 
         public static DiscordRichPresencePlugin Instance { get; private set; }
 
@@ -38,29 +38,71 @@ namespace DiscordRichPresence
         public static string CurrentBoss { get; set; }
 
         public static bool IsInEOSLobby => EOSLobbyManager.GetFromPlatformSystems() != null && EOSLobbyManager.GetFromPlatformSystems().isInLobby;
+        
+        private void Start()
+        {
+            Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            ChangeActivity();
+        }
+
+        private void OnDiscordDisable()
+        {
+            Client.Dispose();
+        }
+
+        public void ChangeActivity()
+        {
+            var activityManager = Client.GetActivityManager();
+            RichPresence = new Discord.Activity
+            {
+                State = "Starting game...",
+            };
+            activityManager.UpdateActivity(RichPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+        }
+
+        private void Update()
+        {
+            if (Client != null)
+            {
+                Client.RunCallbacks();
+            }
+            else
+            {
+                LoggerEXT.LogInfo("discord is null");
+            }
+            
+        }
+        
 
         public void Awake()
         {
             Instance = this;
             LoggerEXT = Logger;
             Logger.LogInfo("Starting Discord Rich Presence...");
-
-            UnityNamedPipe pipe = new UnityNamedPipe();
-            Client = new DiscordRpcClient("992086428240580720", client: pipe);
-            Client.RegisterUriScheme("632360");
-
-            RichPresence = new RichPresence()
+            
+            Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            ChangeActivity();
+            
+            var activityManager = Client.GetActivityManager();
+            Client.GetActivityManager();
+            RichPresence = new Activity
             {
                 State = "Starting game...",
-                Assets = new Assets(),
-                Secrets = new Secrets(),
-                Timestamps = new Timestamps()
+                Assets = new ActivityAssets(),
+                Secrets = new ActivitySecrets(),
+                Timestamps = new ActivityTimestamps()
             };
-
-            Client.SetPresence(RichPresence);
-
-            Client.Initialize();
-
+            activityManager.UpdateActivity(RichPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            
+            Logger.LogInfo("Discord Rich Presence has started...");
+            
+            
             PluginConfig.AllowJoiningEntry = Config.Bind("Options", "Allow Joining", true, "Controls whether or not other users should be allowed to ask to join your game.");
             PluginConfig.TeleporterStatusEntry = Config.Bind("Options", "Teleporter Status", PluginConfig.TeleporterStatus.None, "Controls whether the teleporter boss, teleporter charge status, or neither, should be shown alongside the current difficulty.");
             PluginConfig.MainMenuIdleMessageEntry = Config.Bind("Options", "Main Menu Idle Message", "", "Allows you to choose a message to be displayed when idling in the main menu.");
@@ -76,7 +118,7 @@ namespace DiscordRichPresence
 
         private static void InitializeHooks()
         {
-            DiscordClientHooks.AddHooks(Client);
+            //DiscordClientHooks.AddHooks(discord);
             PauseManagerHooks.AddHooks();
             SteamworksLobbyHooks.AddHooks();
             RoR2Hooks.AddHooks();
@@ -88,7 +130,7 @@ namespace DiscordRichPresence
 
         public static void Dispose()
         {
-            DiscordClientHooks.RemoveHooks(Client);
+            //DiscordClientHooks.RemoveHooks(discord);
             PauseManagerHooks.RemoveHooks();
             SteamworksLobbyHooks.RemoveHooks();
             RoR2Hooks.RemoveHooks();
@@ -117,7 +159,7 @@ namespace DiscordRichPresence
 
         private static void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
         {
-            if (Client == null || !Client.IsInitialized)
+            if (Client == null)
             {
                 return;
             }
@@ -167,6 +209,9 @@ namespace DiscordRichPresence
             {
                 //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Value: " + obj.sceneDef.stageOrder);
                 //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Run Instance Value: " + (Run.instance.stageClearCount + 1));
+                
+                
+                
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
             }
         }

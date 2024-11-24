@@ -1,7 +1,7 @@
-﻿using DiscordRichPresence.Utils;
-using RoR2;
+﻿using RoR2;
 using System;
 using System.Collections;
+using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Hooks
@@ -28,10 +28,19 @@ namespace DiscordRichPresence.Hooks
             }
 
             LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
-            RichPresence.Assets.SmallImageKey = InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName());
-            RichPresence.Assets.SmallImageText = localBody.GetDisplayName();
-            Client.SetPresence(RichPresence);
-            PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
+            LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
+            
+            var richPresence = RichPresence;
+            richPresence.Assets.SmallImage =
+                "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" +
+                InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";
+            richPresence.Assets.SmallText = localBody.GetDisplayName();
+            var activityManager = Client.GetActivityManager();
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            PresenceUtils.SetStagePresence(Client, richPresence, CurrentScene, Run.instance);
         }
 
         public static void RemoveHooks()
