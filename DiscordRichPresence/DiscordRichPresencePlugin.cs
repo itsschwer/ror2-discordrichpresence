@@ -25,7 +25,7 @@ namespace DiscordRichPresence
 
         public static Discord.Discord Client { get; set; }
 
-        public static Discord.Activity RichPresence { get; set; }
+        public static Activity RichPresence { get; set; }
 
         public static DiscordRichPresencePlugin Instance { get; private set; }
 
@@ -41,7 +41,7 @@ namespace DiscordRichPresence
         
         private void Start()
         {
-            Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            Client = new Discord.Discord(992086428240580720, (ulong)CreateFlags.Default);
             ChangeActivity();
         }
 
@@ -53,7 +53,7 @@ namespace DiscordRichPresence
         public void ChangeActivity()
         {
             var activityManager = Client.GetActivityManager();
-            RichPresence = new Discord.Activity
+            RichPresence = new Activity
             {
                 State = "Starting game...",
             };
@@ -83,18 +83,21 @@ namespace DiscordRichPresence
             LoggerEXT = Logger;
             Logger.LogInfo("Starting Discord Rich Presence...");
             
-            Client = new Discord.Discord(992086428240580720, (UInt64)CreateFlags.Default);
+            Client = new Discord.Discord(992086428240580720, (ulong)CreateFlags.Default);
             ChangeActivity();
             
             var activityManager = Client.GetActivityManager();
             Client.GetActivityManager();
-            RichPresence = new Activity
+            Activity richPresence = new Activity
             {
                 State = "Starting game...",
                 Assets = new ActivityAssets(),
                 Secrets = new ActivitySecrets(),
                 Timestamps = new ActivityTimestamps()
             };
+            richPresence.Assets.LargeImage = "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/riskofrain2.png";
+            richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
+            RichPresence = richPresence;
             activityManager.UpdateActivity(RichPresence, (result =>
             {
                 LoggerEXT.LogInfo("activity updated, " + result);
@@ -109,6 +112,7 @@ namespace DiscordRichPresence
 
             if (RiskOfOptionsUtils.IsEnabled)
             {
+                RiskOfOptionsUtils.AddIcon();
                 RiskOfOptionsUtils.SetModDescription("Adds Discord Rich Presence functionality to Risk of Rain 2");
                 RiskOfOptionsUtils.AddCheckBoxOption(PluginConfig.AllowJoiningEntry);
                 RiskOfOptionsUtils.AddMultiOption(PluginConfig.TeleporterStatusEntry);

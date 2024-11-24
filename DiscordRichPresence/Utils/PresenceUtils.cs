@@ -7,7 +7,7 @@ namespace DiscordRichPresence.Utils
 {
     public static class PresenceUtils
     {
-        public static void SetStagePresence(Discord.Discord client, Discord.Activity richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
+        public static void SetStagePresence(Discord.Discord client, Activity richPresence, SceneDef scene, Run run, bool isPaused = false) // Don't like this ... needs to be decluttered
         {
             if (Run.instance == null)
             {
@@ -50,13 +50,13 @@ namespace DiscordRichPresence.Utils
             if (InfoTextUtils.StagesWithAssets.Contains(scene.baseSceneName))
             {
                 richPresence.Assets.LargeImage =
-                    "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/" +
+                    "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/" +
                     scene.baseSceneName + ".png";
             }
             else
             {
                 richPresence.Assets.LargeImage =
-                    "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/riskofrain2.png";
+                    "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/riskofrain2.png";
             }
             
             richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
@@ -83,7 +83,7 @@ namespace DiscordRichPresence.Utils
                 richPresence.Details = "Escaping! | " + currentDifficultyString;
                 if (!isPaused)
                 {
-                    richPresence.Timestamps.End = (long)DateTimeOffset.Now.ToUnixTimeSeconds() + (long)MoonCountdownTimer;
+                    richPresence.Timestamps.End = DateTimeOffset.Now.ToUnixTimeSeconds() + (long)MoonCountdownTimer;
                 }
             }
             else
@@ -100,11 +100,11 @@ namespace DiscordRichPresence.Utils
 
                 if (scene.sceneType == SceneType.Stage && !isPaused)
                 {
-                    richPresence.Timestamps.Start = (long)DateTimeOffset.Now.ToUnixTimeSeconds() - (long)run.GetRunStopwatch();
+                    richPresence.Timestamps.Start = DateTimeOffset.Now.ToUnixTimeSeconds() - (long)run.GetRunStopwatch();
                 }
             }
 
-            DiscordRichPresencePlugin.RichPresence = richPresence;
+            RichPresence = richPresence;
             var activityManager = client.ActivityManagerInstance;
             activityManager.UpdateActivity(richPresence, (result =>
             {
@@ -112,7 +112,7 @@ namespace DiscordRichPresence.Utils
             }));
         }
 
-        public static void SetMainMenuPresence(Discord.Discord client, Discord.Activity richPresence, string details = "")
+        public static void SetMainMenuPresence(Discord.Discord client, Activity richPresence, string details = "")
         {
             richPresence.Assets = new ActivityAssets()
             {
@@ -132,7 +132,7 @@ namespace DiscordRichPresence.Utils
             richPresence.Secrets = new ActivitySecrets();
             richPresence.Party = new ActivityParty(); // Clear secrets and party
 
-            DiscordRichPresencePlugin.RichPresence = richPresence;
+            RichPresence = richPresence;
             var activityManager = client.ActivityManagerInstance;
             activityManager.UpdateActivity(richPresence, (result =>
             {
@@ -140,7 +140,7 @@ namespace DiscordRichPresence.Utils
             }));
         }
 
-        public static void SetLobbyPresence(Discord.Discord client, Discord.Activity richPresence, Facepunch.Steamworks.Client faceClient, bool justParty = false, string details = "")
+        public static void SetLobbyPresence(Discord.Discord client, Activity richPresence, Facepunch.Steamworks.Client faceClient, bool justParty = false, string details = "")
         {
             if (justParty)
             {
@@ -163,7 +163,7 @@ namespace DiscordRichPresence.Utils
             Party:
             richPresence = UpdateParty(richPresence, faceClient);
 
-            DiscordRichPresencePlugin.RichPresence = richPresence;
+            RichPresence = richPresence;
             var activityManager = client.ActivityManagerInstance;
             activityManager.UpdateActivity(richPresence, (result =>
             {
@@ -171,7 +171,7 @@ namespace DiscordRichPresence.Utils
             }));
         }
 
-        public static void SetLobbyPresence(Discord.Discord client, Discord.Activity richPresence, EOSLobbyManager lobbyManager, bool justParty = false, string details = "")
+        public static void SetLobbyPresence(Discord.Discord client, Activity richPresence, EOSLobbyManager lobbyManager, bool justParty = false, string details = "")
         {
             if (justParty)
             {
@@ -194,7 +194,7 @@ namespace DiscordRichPresence.Utils
             Party:
             richPresence = UpdateParty(richPresence, lobbyManager);
 
-            DiscordRichPresencePlugin.RichPresence = richPresence;
+            RichPresence = richPresence;
             var activityManager = client.ActivityManagerInstance;
             activityManager.UpdateActivity(richPresence, (result =>
             {
@@ -202,7 +202,7 @@ namespace DiscordRichPresence.Utils
             }));
         }
 
-        public static Discord.Activity UpdateParty(Discord.Activity richPresence, Facepunch.Steamworks.Client faceClient, bool includeJoinButton = true)
+        public static Activity UpdateParty(Activity richPresence, Facepunch.Steamworks.Client faceClient, bool includeJoinButton = true)
         {
             richPresence.Party.Id = faceClient.Username;
             richPresence.Party.Size.CurrentSize = faceClient.Lobby.NumMembers;
@@ -217,7 +217,7 @@ namespace DiscordRichPresence.Utils
             return richPresence;
         }
 
-        public static Discord.Activity UpdateParty(Discord.Activity richPresence, EOSLobbyManager lobbyManager, bool includeJoinButton = true)
+        public static Activity UpdateParty(Activity richPresence, EOSLobbyManager lobbyManager, bool includeJoinButton = true)
         {
             richPresence.Party.Id = lobbyManager.CurrentLobbyId;
             richPresence.Party.Size.CurrentSize = lobbyManager.newestLobbyData.totalMaxPlayers;
