@@ -3,7 +3,6 @@ Adds Discord Rich Presence functionality to Risk of Rain 2.
 ## Features
 - Displays the current stage's icon, name, and subtitle, the currently selected difficulty, the currently selected character, and the current run time.
 - Has a unique presence for different menu states (currently idling in the menu, choosing a character, and reading the logbook).
-- Allows invitation of users via Discord (requires both the sender and receiver to have the mod for this to work).
 - Other unique presences depending on the game status.
 
 A plethora of options are provided to fine-tune the presence settings, such as whether or not to show the currently fought boss, the teleporter charge status, include a custom menu idle message, and more. [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/) provides a nice UI for interacting with this! (Otherwise, it can be found at `BepInEx/config/com.cuno.discord.cfg`)
@@ -24,7 +23,3 @@ Playing in a stage
 Idling in a lobby
 
 ![Idling in a lobby](https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Example%20Images/LobbyIdleImage.png)
-
-Invitation via Discord
-
-![Invitation via Discord](https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Example%20Images/JoinedGroupImage.png)

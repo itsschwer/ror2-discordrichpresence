@@ -4,20 +4,16 @@ using BepInEx.Logging;
 using Discord;
 using DiscordRichPresence.Hooks;
 using DiscordRichPresence.Utils;
-//using DiscordRPC.Unity;
 using RoR2;
 using R2API.Utils;
-//using DiscordRichPresence.Hooks;
-using UnityEngine;
 using UnityEngine.SceneManagement;
-using Console = System.Console;
 
 // Thanks to WhelanB (to which this repository originates from)
 // and DarkKronicle (whose repository this is forked from)
 
 namespace DiscordRichPresence
 {
-    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.2")]
+    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.2.3")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
 

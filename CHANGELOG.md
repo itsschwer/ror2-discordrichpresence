@@ -1,3 +1,11 @@
+### 1.2.3 ###
+- Update by icebro/bread 🥺
+- Fully fixed to work with Seekers of the Storm
+- Updated survivor icons for Paladin, Nemesis Commando, Executioner and Chirr
+- Added survivor icons for SOTS survivors, Dancer, Johnny, Deputy, Pilot, Ranger, Robomando, Rocket, Sonic, Custodian and Nemesis Mercenary
+- Added stage icons for SOTS and Forgotten Relics stages
+- Currently discord game lobbies are still not functional, hopefully fixed in a future update
+
 ### 1.2.2 ###
 - Updating to work with Seekers of the Storm (thanks to TheBEEGRat for testing)
 
