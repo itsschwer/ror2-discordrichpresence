@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 
 // Thanks to WhelanB (to which this repository originates from)
 // and DarkKronicle (whose repository this is forked from)
+// and icebro/bread (who fixed compatibility with SOTS)
 
 namespace DiscordRichPresence
 {
