@@ -23,7 +23,7 @@ namespace DiscordRichPresence.Utils
             //"Void Fiend",
             "False Son",
             "Seeker",
-            "CHEF",
+            "Chef",
             "Enforcer",
             "Miner",
             "Paladin",
@@ -113,6 +113,11 @@ namespace DiscordRichPresence.Utils
             if (name == "「V??oid Fiend』")
             {
                 return "voidfiend";
+            }
+
+            if (name == "CHEF") // gnome chef 
+            {
+                return "Chef";
             }
             if (CharactersWithAssets.Contains(name))
             {
