@@ -23,7 +23,7 @@ namespace DiscordRichPresence.Utils
             //"Void Fiend",
             "False Son",
             "Seeker",
-            "Chef",
+            "CHEF",
             "Enforcer",
             "Miner",
             "Paladin",
