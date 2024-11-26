@@ -45,7 +45,8 @@ namespace DiscordRichPresence.Utils
             "Sonic",
             "Robomando",
             "Deputy",
-            "Ranger"
+            "Ranger",
+            "Rifter"
         };
         
         public static List<string> StagesWithAssets = new List<string>()
