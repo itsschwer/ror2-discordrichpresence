@@ -45,7 +45,8 @@ namespace DiscordRichPresence.Utils
             "Sonic",
             "Robomando",
             "Deputy",
-            "Ranger"
+            "Ranger",
+            "Rifter"
         };
         
         public static List<string> StagesWithAssets = new List<string>()
@@ -113,6 +114,11 @@ namespace DiscordRichPresence.Utils
             if (name == "「V??oid Fiend』")
             {
                 return "voidfiend";
+            }
+
+            if (name == "CHEF") // gnome chef 
+            {
+                return "Chef";
             }
             if (CharactersWithAssets.Contains(name))
             {

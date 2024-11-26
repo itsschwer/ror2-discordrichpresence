@@ -1,4 +1,4 @@
-﻿using RoR2;
+using RoR2;
 using System;
 using System.Collections;
 using DiscordRichPresence.Utils;
@@ -17,6 +17,7 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.EscapeSequenceController.SetCountdownTime += EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
+            On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
         }
 
         private static void Stage_onStageStartGlobal(Stage obj)
@@ -31,9 +32,7 @@ namespace DiscordRichPresence.Hooks
             LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
             
             var richPresence = RichPresence;
-            richPresence.Assets.SmallImage =
-                "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" +
-                InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";
+            richPresence.Assets.SmallImage = "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";
             richPresence.Assets.SmallText = localBody.GetDisplayName();
             var activityManager = Client.GetActivityManager();
             activityManager.UpdateActivity(richPresence, (result =>
@@ -118,5 +117,34 @@ namespace DiscordRichPresence.Hooks
 
             orig(self, mainMenuController);
         }
+
+        private static void Run_OnClientGameOver(On.RoR2.Run.orig_OnClientGameOver orig, Run self, RunReport runReport)
+        {
+            orig(self, runReport);
+            if (Run.instance != null && CurrentScene != null)
+            {
+                PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true);
+            }
+            var richPresence = RichPresence;
+            
+            TimeSpan time = TimeSpan.FromSeconds((long)self.GetRunStopwatch());
+
+            if ((long)self.GetRunStopwatch() > 60 * 60) // is it uhh longer then an hour 
+            {
+                richPresence.State = "Defeat! " +  time.ToString(@"hh\:mm\:ss") + " - " + richPresence.State;
+            }
+            else
+            {
+                richPresence.State = "Defeat! " +  time.ToString(@"mm\:ss") + " - " + richPresence.State;
+            }
+            var activityManager = Client.ActivityManagerInstance;
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            
+            
+        }
+        
     }
 }
