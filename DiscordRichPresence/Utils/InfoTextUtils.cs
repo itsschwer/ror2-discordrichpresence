@@ -121,7 +121,8 @@ namespace DiscordRichPresence.Utils
             "villagenight",
             "voidraid",
             "voidstage",
-            "wispgraveyard"
+            "wispgraveyard",
+            "rootjungle"
         };
         public enum StyleTag : byte
         {
