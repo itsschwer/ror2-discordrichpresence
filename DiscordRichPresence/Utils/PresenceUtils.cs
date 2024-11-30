@@ -50,7 +50,7 @@ namespace DiscordRichPresence.Utils
             if (InfoTextUtils.StagesWithAssets.Contains(scene.baseSceneName))
             {
                 richPresence.Assets.LargeImage =
-                    "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/" +
+                    "https://raw.githubusercontent.com/Phreelosu/RoR2-Discord-RP/refs/heads/master/Assets/" +
                     scene.baseSceneName + ".png";
             }
             else
