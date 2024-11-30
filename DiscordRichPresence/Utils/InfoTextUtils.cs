@@ -69,7 +69,8 @@ namespace DiscordRichPresence.Utils
             "Submariner",
             "Tesla Trooper",
             "Wanderer",
-            "Cosmic Champion"
+            "Cosmic Champion",
+            "Belmont"
         };
         
         public static List<string> StagesWithAssets = new List<string>()
