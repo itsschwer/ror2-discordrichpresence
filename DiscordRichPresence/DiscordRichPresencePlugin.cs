@@ -96,7 +96,7 @@ namespace DiscordRichPresence
                 Secrets = new ActivitySecrets(),
                 Timestamps = new ActivityTimestamps()
             };
-            richPresence.Assets.LargeImage = "https://raw.githubusercontent.com/Phreelosu/RoR2-Discord-RP/refs/heads/master/Assets/riskofrain2.png";
+            richPresence.Assets.LargeImage = "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/riskofrain2.png";
             richPresence.Assets.LargeText = "DiscordRichPresence v" + Instance.Info.Metadata.Version;
             RichPresence = richPresence;
             activityManager.UpdateActivity(RichPresence, (result =>
