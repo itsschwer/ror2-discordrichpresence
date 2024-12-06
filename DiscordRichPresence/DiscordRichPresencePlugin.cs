@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BepInEx;
 using BepInEx.Logging;
 using Discord;
@@ -31,8 +31,12 @@ namespace DiscordRichPresence
         public static DiscordRichPresencePlugin Instance { get; private set; }
 
         public static SceneDef CurrentScene => SceneCatalog.GetSceneDefForCurrentScene();
-
+        
         public static float CurrentChargeLevel { get; set; }
+        
+        public static float MoonPillars { get; set; }
+        
+        public static float MoonPillarsLeft { get; set; }
 
         public static float MoonCountdownTimer { get; set; }
 
@@ -171,6 +175,8 @@ namespace DiscordRichPresence
 
             CurrentBoss = "";
             CurrentChargeLevel = 0;
+            MoonPillars = 0;
+            MoonPillarsLeft = 0;
             MoonCountdownTimer = 0;
 
             EOSLobbyManager lobbyManager = EOSLobbyManager.GetFromPlatformSystems();
@@ -209,7 +215,8 @@ namespace DiscordRichPresence
         private static void Stage_onServerStageBegin(Stage obj)
         {
             CurrentChargeLevel = 0;
-
+            MoonPillars = 0; // resetting it here for the sillies who have mods that let you loop past mithrix ,.,
+            MoonPillarsLeft = 0;
             if (CurrentScene != null && Run.instance != null) // Test: Stage 1 --> 2 on 2 player MP
             {
                 //LoggerEXT.LogInfo("Stage On Server Stage Begin Called With Value: " + obj.sceneDef.stageOrder);

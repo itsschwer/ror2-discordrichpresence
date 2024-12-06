@@ -1,6 +1,5 @@
 using RoR2;
 using System;
-using System.Collections;
 using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
@@ -18,6 +17,23 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
             On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
+            On.RoR2.MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
+        }
+
+        private static void MoonBatteryMissionController_OnBatteryCharged(On.RoR2.MoonBatteryMissionController.orig_OnBatteryCharged orig, RoR2.MoonBatteryMissionController self, HoldoutZoneController holdoutzone)
+        {
+            orig(self, holdoutzone);
+            MoonPillarsLeft = self.numRequiredBatteries;
+            MoonPillars = self.numChargedBatteries;
+            LoggerEXT.LogInfo("MoonBatteryMissionController_OnBatteryCharged called");
+            
+            var richPresence = RichPresence;
+            var activityManager = Client.GetActivityManager();
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            PresenceUtils.SetStagePresence(Client, richPresence, CurrentScene, Run.instance);
         }
 
         private static void Stage_onStageStartGlobal(Stage obj)
@@ -51,6 +67,8 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
+            On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
+            On.RoR2.MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
         }
 
         private static void CharacterBody_onBodyStartGlobal(CharacterBody obj)
