@@ -1,6 +1,5 @@
 using RoR2;
 using System;
-using System.Collections;
 using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
@@ -18,6 +17,22 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
             On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
+            On.RoR2.MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
+        }
+
+        private static void MoonBatteryMissionController_OnBatteryCharged(On.RoR2.MoonBatteryMissionController.orig_OnBatteryCharged orig, RoR2.MoonBatteryMissionController self, HoldoutZoneController holdoutzone)
+        {
+            orig(self, holdoutzone);
+            MoonPillarsLeft = self.numRequiredBatteries;
+            MoonPillars = self.numChargedBatteries;
+            
+            var richPresence = RichPresence;
+            var activityManager = Client.GetActivityManager();
+            activityManager.UpdateActivity(richPresence, (result =>
+            {
+                LoggerEXT.LogInfo("activity updated, " + result);
+            }));
+            PresenceUtils.SetStagePresence(Client, richPresence, CurrentScene, Run.instance);
         }
 
         private static void Stage_onStageStartGlobal(Stage obj)
@@ -28,8 +43,8 @@ namespace DiscordRichPresence.Hooks
                 return;
             }
 
-            LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
-            LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
+            //LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
+            //LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
             
             var richPresence = RichPresence;
             richPresence.Assets.SmallImage = "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";
@@ -51,6 +66,8 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.EscapeSequenceController.SetCountdownTime -= EscapeSequenceController_SetCountdownTime;
             On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
+            On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
+            On.RoR2.MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
         }
 
         private static void CharacterBody_onBodyStartGlobal(CharacterBody obj)
