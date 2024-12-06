@@ -2,6 +2,7 @@ using RoR2;
 using System;
 using DiscordRichPresence.Utils;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
+using MoonBatteryMissionController = On.RoR2.MoonBatteryMissionController;
 
 namespace DiscordRichPresence.Hooks
 {
@@ -17,10 +18,17 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.InfiniteTowerRun.BeginNextWave += InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter += BaseMainMenuScreen_OnEnter;
             On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
+<<<<<<< HEAD
             On.RoR2.MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
         }
 
         private static void MoonBatteryMissionController_OnBatteryCharged(On.RoR2.MoonBatteryMissionController.orig_OnBatteryCharged orig, RoR2.MoonBatteryMissionController self, HoldoutZoneController holdoutzone)
+=======
+            MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
+        }
+
+        private static void MoonBatteryMissionController_OnBatteryCharged(MoonBatteryMissionController.orig_OnBatteryCharged orig, RoR2.MoonBatteryMissionController self, HoldoutZoneController holdoutzone)
+>>>>>>> origin/master
         {
             orig(self, holdoutzone);
             MoonPillarsLeft = self.numRequiredBatteries;
@@ -68,7 +76,11 @@ namespace DiscordRichPresence.Hooks
             On.RoR2.InfiniteTowerRun.BeginNextWave -= InfiniteTowerRun_BeginNextWave;
             On.RoR2.UI.MainMenu.BaseMainMenuScreen.OnEnter -= BaseMainMenuScreen_OnEnter;
             On.RoR2.Run.OnClientGameOver += Run_OnClientGameOver;
+<<<<<<< HEAD
             On.RoR2.MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
+=======
+            MoonBatteryMissionController.OnBatteryCharged += MoonBatteryMissionController_OnBatteryCharged;
+>>>>>>> origin/master
         }
 
         private static void CharacterBody_onBodyStartGlobal(CharacterBody obj)
