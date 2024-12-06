@@ -25,7 +25,6 @@ namespace DiscordRichPresence.Hooks
             orig(self, holdoutzone);
             MoonPillarsLeft = self.numRequiredBatteries;
             MoonPillars = self.numChargedBatteries;
-            LoggerEXT.LogInfo("MoonBatteryMissionController_OnBatteryCharged called");
             
             var richPresence = RichPresence;
             var activityManager = Client.GetActivityManager();
@@ -44,8 +43,8 @@ namespace DiscordRichPresence.Hooks
                 return;
             }
 
-            LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
-            LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
+            //LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
+            //LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
             
             var richPresence = RichPresence;
             richPresence.Assets.SmallImage = "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";

@@ -19,7 +19,7 @@ namespace DiscordRichPresence.Utils
                 LoggerEXT.LogError("Scene is null. Check for its null status before passing it as a parameter. Stack trace follows:");
             }
             
-            LoggerEXT.LogInfo("baseSceneName: " + scene.baseSceneName); // uhhh yeah 
+            //LoggerEXT.LogInfo("baseSceneName: " + scene.baseSceneName); // uhhh yeah 
             
             /*
              something like this could be used to detect if the stage has a valid image without having to update the dll (and survivors too(
@@ -101,7 +101,6 @@ namespace DiscordRichPresence.Utils
 
                 if ((MoonPillars > 0 | MoonPillarsLeft > 0) && !Mathf.Approximately(MoonPillars, MoonPillarsLeft)) //idk rider wanted it like this and not moonpillars != moonpillarsleft because floating point numbers idk 
                 {
-                    LoggerEXT.LogInfo("debug test wow !!");
                     richPresence.Details = "Charging pillars " + MoonPillars + "/" + MoonPillarsLeft + " | " + currentDifficultyString;
                 }
 
