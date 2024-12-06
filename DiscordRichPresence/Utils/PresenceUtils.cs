@@ -1,6 +1,7 @@
 ﻿using Discord;
 using RoR2;
 using System;
+using UnityEngine;
 using static DiscordRichPresence.DiscordRichPresencePlugin;
 
 namespace DiscordRichPresence.Utils
@@ -96,6 +97,12 @@ namespace DiscordRichPresence.Utils
                 else if (PluginConfig.TeleporterStatusEntry.Value == PluginConfig.TeleporterStatus.Charge && CurrentChargeLevel > 0)
                 {
                     richPresence.Details = "Charging teleporter (" + CurrentChargeLevel * 100 + "%) | " + currentDifficultyString;
+                }
+
+                if ((MoonPillars > 0 | MoonPillarsLeft > 0) && !Mathf.Approximately(MoonPillars, MoonPillarsLeft)) //idk rider wanted it like this and not moonpillars != moonpillarsleft because floating point numbers idk 
+                {
+                    LoggerEXT.LogInfo("debug test wow !!");
+                    richPresence.Details = "Charging pillars " + MoonPillars + "/" + MoonPillarsLeft + " | " + currentDifficultyString;
                 }
 
                 if (scene.sceneType == SceneType.Stage && !isPaused)
