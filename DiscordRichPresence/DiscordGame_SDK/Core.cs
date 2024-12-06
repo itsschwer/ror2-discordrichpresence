@@ -1107,7 +1107,7 @@ namespace Discord
         public void RunCallbacks()
         {
             var res = Methods.RunCallbacks(MethodsPtr);
-            if (res != Result.Ok)
+            if (res != Result.Ok && res != Result.NotRunning) // adding not running here since spammy and can happen often (50k line log with literally only this error flashbacks ( </3 ,,. 
             {
                 throw new ResultException(res);
             }
