@@ -92,7 +92,7 @@ namespace DiscordRichPresence.Hooks
         // Additionally, comparing with CurrentChargeLevel prevents unnecessary presence updates (which would lead to ratelimiting)
         private static void TeleporterInteraction_FixedUpdate(On.RoR2.TeleporterInteraction.orig_FixedUpdate orig, TeleporterInteraction self)
         {
-            if (Math.Abs(Math.Round(self.chargeFraction, 2) - CurrentChargeLevel) > 0.005 && PluginConfig.TeleporterStatusEntry.Value == PluginConfig.TeleporterStatus.Charge)
+            if (Math.Abs(Math.Round(self.chargeFraction, 2) - CurrentChargeLevel) > 0.005 && PluginConfig.TeleporterStatusEntry.Value == PluginConfig.TeleporterStatus.Charge && !RichPresence.State.Contains("Defeat!"))
             {
                 CurrentChargeLevel = (float)Math.Round(self.chargeFraction, 2);
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance);
@@ -142,6 +142,7 @@ namespace DiscordRichPresence.Hooks
             {
                 PresenceUtils.SetStagePresence(Client, RichPresence, CurrentScene, Run.instance, true);
             }
+            
             var richPresence = RichPresence;
             
             TimeSpan time = TimeSpan.FromSeconds((long)self.GetRunStopwatch());
@@ -154,14 +155,15 @@ namespace DiscordRichPresence.Hooks
             {
                 richPresence.State = "Defeat! " +  time.ToString(@"mm\:ss") + " - " + richPresence.State;
             }
+            
             var activityManager = Client.ActivityManagerInstance;
+            
             activityManager.UpdateActivity(richPresence, (result =>
             {
                 LoggerEXT.LogInfo("activity updated, " + result);
             }));
             
-            
+            RichPresence = richPresence;
         }
-        
     }
 }
