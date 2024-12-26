@@ -44,10 +44,10 @@ namespace DiscordRichPresence.Hooks
             }
 
             //LoggerEXT.LogInfo("LocalBodyBaseName: " + localBody.baseNameToken); //!!!USE THIS!!!
-            LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
+            //LoggerEXT.LogInfo("LocalBodyBaseName: " + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName())); //for testing :3 
             
             var richPresence = RichPresence;
-            richPresence.Assets.SmallImage = "https://raw.githubusercontent.com/gamrtiem/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";
+            richPresence.Assets.SmallImage = "https://raw.githubusercontent.com/mikhailmikhalchuk/RoR2-Discord-RP/refs/heads/master/Assets/Characters/" + InfoTextUtils.GetCharacterInternalName(localBody.GetDisplayName()) + ".png";
             richPresence.Assets.SmallText = localBody.GetDisplayName();
             var activityManager = Client.GetActivityManager();
             activityManager.UpdateActivity(richPresence, (result =>
