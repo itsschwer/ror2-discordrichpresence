@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 
 namespace DiscordRichPresence
 {
-    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.3.1")]
+    [BepInPlugin("com.cuno.discord", "Discord Rich Presence", "1.3.2")]
 
     [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
 
@@ -88,7 +88,7 @@ namespace DiscordRichPresence
             LoggerEXT = Logger;
             Logger.LogInfo("Starting Discord Rich Presence...");
             
-            Client = new Discord.Discord(992086428240580720, (ulong)CreateFlags.Default);
+            Client = new Discord.Discord(992086428240580720, (ulong)CreateFlags.NoRequireDiscord);
             ChangeActivity();
             
             var activityManager = Client.GetActivityManager();
