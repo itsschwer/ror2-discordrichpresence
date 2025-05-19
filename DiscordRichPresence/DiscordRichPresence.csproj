@@ -24,6 +24,7 @@
 	<PackageReference Include="MMHOOK.RoR2" Version="2024.11.4">
 		<NoWarn>NU1701</NoWarn>
 	</PackageReference>
+	<PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,9 +51,6 @@
     </Reference>
     <Reference Include="Rewired_CSharp">
       <HintPath>libs\Rewired_CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="RiskOfOptions">
-      <HintPath>libs\RiskOfOptions.dll</HintPath>
     </Reference>
     <Reference Include="UnityNamedPipe">
 	  <HintPath>libs\UnityNamedPipe.dll</HintPath>
